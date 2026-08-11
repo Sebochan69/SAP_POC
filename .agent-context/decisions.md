@@ -37,3 +37,7 @@
 - Pi review blocker fixes preserve the offline-only boundary: range checks, explicit leave durations, strict monthly/skip validation, and controlled failure results add no SAP/Edge/network behavior.
 - `skip_summary.monthly` is a safe per-month reason/category count map used to validate monthly summary consistency before confirmation.
 - `safe_log_fields` accepts only validated preview/awaiting plans or validated failed results with controlled error codes; raw failure text is rejected.
+
+- Feature 6B preflight is documentation-only and blocked. `.agent-context/feature6b-gates.md` is the source of truth for Q1–Q11 owners, missing answers, and approval order.
+- No Edge/SAP/network/browser implementation, credentials, cookies, tokens, URLs, selectors, `Check`, or `Update` action may be added or used until Pi records all gates and explicitly authorizes the next phase.
+- The user must provide/confirm only the approved non-secret environment/session prerequisites and perform login/MFA personally later; secrets remain inside the user-controlled Edge session.

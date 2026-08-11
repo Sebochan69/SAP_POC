@@ -107,3 +107,11 @@ Result: **PASS — 33 tests passed; compilation passed.** No browser or visual v
 ## Next feature
 
 Feature 6B (live adapter, Edge launch, SAP connection, credential use, or submission) is not approved.
+
+## Feature 6B preflight
+
+Status: **BLOCKED — preflight/documentation only.** The complete gate checklist is `.agent-context/feature6b-gates.md`.
+
+Remaining inputs are Q1–Q11 from the Feature 5 plan: approved non-secret environment/session boundary (Pi + SAP environment owner, confirmed by the user), evidence-backed UI labels/selectors (OMP discovery + SAP UI owner), `Check` side-effect classification (SAP process owner), lock/release semantics (SAP process owner), duplicate identity (SAP process owner + Pi), work/leave and partial-day reconciliation (Pi + SAP process owner), authoritative monthly/status mapping (SAP reporting owner), post-`Update` evidence (SAP process + audit owners), evidence retention (security/audit owner), abort/kill-switch procedure (Pi + security owner), and prompt-injection/action allowlisting (security owner + OMP).
+
+The user must confirm the watched-session/environment prerequisites and perform login/MFA personally when a later gate opens; no credentials, cookies, tokens, URLs, or selectors are requested or recorded here. Pi must record every answer and explicitly authorize implementation before any Edge/SAP work. Until then, only the local dry-run preview and documentation review are permitted.

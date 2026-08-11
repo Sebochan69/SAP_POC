@@ -25,3 +25,22 @@ python3 -m py_compile app.py verify.py integration_contract.py
 Result: PASS — 33 tests passed; compilation passed. No browser or visual verification is claimed.
 
 Feature 6B live adapter work still requires answering the Feature 5 gates and separate approval.
+
+## Feature 6B preflight
+
+Status: **blocked before implementation**. Created `.agent-context/feature6b-gates.md` with owners, Q1–Q11 missing inputs, approval sequence, and prohibited actions.
+
+Required user/Pi inputs:
+
+- User/Pi + SAP environment owner: approved non-secret environment identifier/allowlist, watched Edge session, user-performed login/MFA procedure, and session boundary.
+- OMP discovery owner + SAP UI owner: evidence-backed labels, roles, and selectors from that environment; none are invented in the artifact.
+- SAP process owner: `Check` side-effect classification and lock/release semantics.
+- SAP process owner + Pi: duplicate identity rules and examples.
+- Pi + SAP process owner: partial-day/work/leave combinations, rounding, and reconciliation rules.
+- SAP reporting owner: authoritative monthly/status fields and mapping.
+- SAP process + audit owners: reliable post-`Update` evidence and postcondition rules.
+- Security/audit owner: evidence redaction, retention, access, and deletion policy.
+- Pi + security owner: kill-switch/abort and uncertain-write manual reconciliation procedure.
+- Security owner + OMP: prompt-injection cases, allowlisted action policy, and confirmation requirements.
+
+No live code, browser dependency, connection, credential, selector, URL, `Check`, or `Update` action was added or used. Pi must record all answers and explicitly authorize the next gate.

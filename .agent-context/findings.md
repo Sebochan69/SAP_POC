@@ -53,3 +53,11 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - Failed results have an exact schema, controlled error codes, and are accepted by `safe_log_fields` without exposing plan IDs or preview content.
 - `verify.py` passes 33 deterministic tests, including regression coverage for all five blockers; `py_compile` passes for `app.py`, `verify.py`, and `integration_contract.py`.
 - `app.py` and its HTTP boundary remain unchanged. Pi re-review found no remaining blockers; Feature 6A is approved. Feature 6B remains gated on unanswered Feature 5 environment/selector/session/side-effect questions and separate approval. No browser or visual verification was performed or claimed.
+
+## Feature 6B preflight findings
+
+- `.agent-context/feature6b-gates.md` records the blocked status, owners, missing Q1–Q11 inputs, approval sequence, and prohibited actions.
+- No live implementation was performed: `app.py`, `verify.py`, and `integration_contract.py` were not edited; no Edge/SAP/network/credential/browser operation was used.
+- User input still required: confirm the approved non-secret environment/session boundary and later perform login/MFA personally in a watched session; never provide credentials, cookies, or tokens to OMP.
+- Pi/SAP/security input still required: written answers to all Q1–Q11, evidence-backed discovery/side-effect classifications, normalized read mappings, retention/abort rules, and explicit authorization for the next gate.
+- Existing Feature 6A dry-run behavior and its last verified 33-test result remain unchanged. No browser or visual verification was performed or claimed.
