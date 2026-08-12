@@ -89,9 +89,9 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 
 6B can finish only through an approved non-production SAP environment plus written Q1–Q11 owner answers and Pi authorization, followed by watched read-only discovery, read-only reconciliation, safe Check, and one-row explicitly confirmed Update with postcondition evidence. If no environment can be provided, the honest endpoint is Feature 6E: local/mock POC complete, 6B not implemented.
 
-## Feature 7 in progress — app structure hardening
+## Feature 7 implemented — app structure hardening
 
-The next local-only item extracts the static frontend document, shared feature errors, and Ollama transport into small modules while keeping `app.py` as the single HTTP/planning process. It will not add SAP/Edge behavior, change `/api/submit`, or unblock Feature 6B.
+The local-only change extracts the static frontend document into `static/index.html`, shared feature errors into `errors.py`, and Ollama transport into `ollama_client.py` while keeping `app.py` as the single HTTP/planning process. Routes, import compatibility, and `/api/submit` behavior remain unchanged. Pi review found no blockers; it does not add SAP/Edge behavior or unblock Feature 6B.
 
 ## Feature 6E implemented and approved
 

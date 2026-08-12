@@ -2,9 +2,9 @@
 
 ## Status
 
-In progress. Feature 6E is approved; Feature 6B remains blocked.
+Implemented and approved by Pi review. Feature 6E is approved; Feature 6B remains blocked.
 
-The next local-only item is structural hardening. Full requirements are in `.agent-context/task-07-app-structure.md`. The smallest intended change extracts the static frontend document, shared errors, and Ollama transport while preserving `app.py` routes and import compatibility.
+The local-only structural hardening extracts the static frontend document, shared errors, and Ollama transport while preserving `app.py` routes and import compatibility. Full requirements are in `.agent-context/task-07-app-structure.md`. Review found no blockers.
 
 ## Goal
 

@@ -110,6 +110,12 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - `verify.py` passes 44 deterministic tests, including subprocess output, fixture immutability, forbidden-import checks, and `/api/submit` 404 coverage. All five Python modules compile.
 - Feature 6B remains blocked; no browser or visual verification is claimed.
 
+## Feature 7 app structure hardening
+
+- The static frontend now lives in `static/index.html`; shared errors live in `errors.py`; Ollama transport/constants/prompt live in `ollama_client.py`.
+- `app.py` remains the single HTTP/planning process and re-exports existing compatibility names. `python3 verify.py` passes 49 tests and the static file loads independently of the current working directory.
+- Pi review found no blockers. No SAP/Edge/browser/live behavior was added; Feature 6B remains blocked.
+
 ## Feature 6E local SAP-like sandbox (approved)
 
 - Pi re-review found no remaining blockers after the confirmation fail-closed fix. `mock_sap_sandbox.py` binds only to `127.0.0.1`, uses Python standard-library HTTP primitives, and keeps all plans/adapter state in memory.

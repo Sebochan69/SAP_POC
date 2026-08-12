@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SARAP mag SAP — Leave/work preview</title>
+  <style>
+    :root { color-scheme: light dark; font: 16px/1.45 system-ui, sans-serif; }
+    body { max-width: 760px; margin: 2rem auto; padding: 0 1rem; }
+    textarea { box-sizing: border-box; width: 100%; min-height: 7rem; padding: .75rem; }
+    button { margin-top: .75rem; padding: .6rem 1rem; }
+    .notice { border-left: 4px solid #c68a00; padding: .6rem .8rem; background: color-mix(in srgb, Canvas 90%, #c68a00); }
+    pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; background: color-mix(in srgb, Canvas 92%, #888); }
+  </style>
+</head>
+<body>
+  <h1>SARAP mag SAP</h1>
+  <p class="notice"><strong>Dry-run only.</strong> This app previews leave or work intent. It cannot connect to SAP, Edge, or submit a request.</p>
+  <form id="chat-form">
+    <label for="request">Describe your leave or work request</label>
+    <textarea id="request" name="request" required placeholder="I need to work on the planner from July 30 to August 3, 2026"></textarea>
+    <button id="preview-button" type="submit">Preview request</button>
+  </form>
+  <h2>Result</h2>
+  <pre id="result" aria-live="polite">No preview yet.</pre>
+  <script>
+    const form = document.querySelector("#chat-form");
+    const input = document.querySelector("#request");
+    const button = document.querySelector("#preview-button");
+    const result = document.querySelector("#result");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+      button.disabled = true;
+      result.textContent = "Extracting intent…";
+      try {
+        const response = await fetch("/api/preview", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text: input.value })
+        });
+        const body = await response.json();
+        result.textContent = JSON.stringify(body, null, 2);
+      } catch (error) {
+        result.textContent = JSON.stringify({ error: { code: "request_failed" } }, null, 2);
+      } finally {
+        button.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>

@@ -152,9 +152,9 @@ python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py m
 
 Result: **PASS — sandbox tests included; 49 deterministic tests passed; compilation passed; fixture checksum unchanged.** No browser or visual verification is claimed.
 
-## Feature 7 — app structure hardening in progress
+## Feature 7 — app structure hardening implemented
 
-The next local-only change extracts `static/index.html`, shared `errors.py`, and `ollama_client.py` while retaining `app.py` as the single HTTP/planning process. This is a maintainability seam, not a live integration change. Existing dry-run routes and `/api/submit` 404 must remain unchanged.
+The local-only change extracts `static/index.html`, shared `errors.py`, and `ollama_client.py` while retaining `app.py` as the single HTTP/planning process. This is a maintainability seam, not a live integration change. Existing dry-run routes and `/api/submit` 404 remain unchanged. Pi review found no blockers.
 
 Feature 6B remains blocked.
 
