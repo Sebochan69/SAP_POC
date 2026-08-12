@@ -1,8 +1,10 @@
-# Feature 6E — Local SAP-like sandbox
+# Feature 7 — Harden local app structure
 
 ## Status
 
-Implemented and approved as a controlled local simulation only. A Pi review blocker around confirmation-before-Check was fixed and re-reviewed with no remaining blockers. Feature 6B remains blocked.
+In progress. Feature 6E is approved; Feature 6B remains blocked.
+
+The next local-only item is structural hardening. Full requirements are in `.agent-context/task-07-app-structure.md`. The smallest intended change extracts the static frontend document, shared errors, and Ollama transport while preserving `app.py` routes and import compatibility.
 
 ## Goal
 

@@ -69,3 +69,4 @@
 - Confirmation in Feature 6E is fail-closed: `SandboxState.confirm()` requires `mock_checked`, the matching successful checked plan, and the unchanged active preview; failed or unchecked confirmation transitions to `failed` and clears the checked-plan marker.
 - `SandboxState.update()` requires `awaiting_confirmation`; failed or unchecked plans cannot update.
 - Feature 6B completion requires an approved non-production SAP environment, written Q1–Q11 owner answers, Pi authorization, and gated watched phases. Without that, Feature 6E is the honest local/mock endpoint and 6B remains unimplemented.
+- Feature 7 hardens the local app with only three seams: `static/index.html`, shared `errors.py`, and `ollama_client.py`; do not split the planner or add a framework/dependencies. Preserve app import compatibility and all dry-run routes.
