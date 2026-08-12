@@ -118,7 +118,7 @@ Feature 6C is approved as a local mock-only adapter because real SAP access is u
 - Strict numeric fixture validation rejects non-finite `hours_per_day` values via `math.isfinite`; deterministic regressions cover Python NaN/infinities and JSON `NaN`.
 - Strict read-range validation rejects malformed, short, non-ISO, reversed, and invalid-calendar ranges as `invalid_date_range`; deterministic regression covers malformed, short, and non-ISO inputs.
 
-Feature 6B remains **BLOCKED**. Its unanswered Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
+Feature 6B remains **BLOCKED**. The user confirmed that no non-production SAP environment is available, so Q1 cannot open discovery. Its remaining Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
 
 Verification:
 
@@ -137,7 +137,7 @@ Result: **PASS — 43 deterministic tests passed; compilation passed.** No brows
 - Fixture bytes/checksum and the adapter's immutable source fixture remain unchanged; `POST /api/submit` remains 404.
 - Forbidden-import coverage rejects browser/network/application/model-runtime imports in the mock adapter and demo.
 
-Feature 6B remains **BLOCKED**. Its unanswered Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
+Feature 6B remains **BLOCKED**. The user confirmed that no non-production SAP environment is available, so Q1 cannot open discovery. Its remaining Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
 
 Verification:
 

@@ -83,4 +83,4 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 - Output is clearly labeled `MOCK ONLY` and includes `previewed`, `mock_checked`, `awaiting_confirmation`, `mock_submitted`, and `fixture_mutated: false`.
 - The demo verifies fixture bytes/checksum and the adapter's source fixture remain unchanged; no HTTP route or UI was added.
 - `verify.py` passes 44 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py` passes.
-- Feature 6B remains blocked; no browser, visual, SAP, Edge, network, or credential behavior was added or verified.
+- Feature 6B remains blocked; the user confirmed no non-production SAP environment is available, so Q1 cannot open discovery. No browser, visual, SAP, Edge, network, or credential behavior was added or verified.

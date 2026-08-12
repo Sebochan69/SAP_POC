@@ -1,8 +1,8 @@
 # Feature 6B preflight gates
 
-Status: **BLOCKED — documentation/preflight only.**
+Status: **BLOCKED — no non-production SAP environment available.**
 
-No live adapter implementation is authorized. The local dry-run planner and Feature 6A offline contract remain the only permitted behavior. No Edge session has been launched, no SAP connection or network call has been made, no credentials/cookies/tokens have been used, and no `Check`/`Update` action has been performed.
+The user confirmed that no non-production SAP environment is available. Q1 cannot be satisfied without an SAP environment owner provisioning or approving one. No live adapter implementation is authorized. The local dry-run planner and Feature 6A offline contract remain the only permitted behavior. No Edge session has been launched, no SAP connection or network call has been made, no credentials/cookies/tokens have been used, and no `Check`/`Update` action has been performed.
 
 ## Ownership
 
@@ -42,4 +42,4 @@ Every item is **unverified** and blocks the corresponding work until its owner s
 
 ## Current decision
 
-Feature 6B is **not ready for implementation**. Until Pi records the required answers and explicitly authorizes the next phase, do only local dry-run/documentation work. Do not infer URLs, selectors, SAP state, side effects, duplicate identity, success, or rollback behavior from screenshots or the plan.
+Feature 6B is **not ready for implementation**. The user has no non-production SAP environment, so the discovery gate cannot open. Keep the project local/mock-only and do only dry-run/documentation work unless an SAP environment owner later provides an approved non-production environment and the remaining Q1–Q11 answers. Do not infer URLs, selectors, SAP state, side effects, duplicate identity, success, or rollback behavior from screenshots or the plan.
