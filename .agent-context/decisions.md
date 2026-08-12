@@ -41,3 +41,9 @@
 - Feature 6B preflight is documentation-only and blocked. `.agent-context/feature6b-gates.md` is the source of truth for Q1–Q11 owners, missing answers, and approval order.
 - No Edge/SAP/network/browser implementation, credentials, cookies, tokens, URLs, selectors, `Check`, or `Update` action may be added or used until Pi records all gates and explicitly authorizes the next phase.
 - The user must provide/confirm only the approved non-secret environment/session prerequisites and perform login/MFA personally later; secrets remain inside the user-controlled Edge session.
+
+- Local Ollama extraction defaults to installed `gemma4:12b`; `OLLAMA_MODEL` remains the override.
+- Use a documented 180-second default for cold CPU inference; `OLLAMA_TIMEOUT_SECONDS` remains the timeout override.
+- Send `think: false` with the strict JSON prompt so Gemma4 returns a schema-valid extraction instead of spending the request on hidden reasoning/output drift.
+- Map Ollama generate HTTP 404 to `ollama_model_not_found`; preserve `ollama_http_error` for other HTTP failures.
+- Treat the local UI and preview API as one `app.py` process serving HTML at `/` and JSON at `/api/preview`; only Ollama is a separate localhost service, not a separate frontend/backend deployment.

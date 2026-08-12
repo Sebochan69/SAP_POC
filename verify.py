@@ -5,6 +5,7 @@ import json
 import tempfile
 import threading
 import unittest
+from unittest import mock
 from pathlib import Path
 from typing import Any
 
@@ -631,6 +632,24 @@ class FeatureVerification(unittest.TestCase):
         checked["state"] = "checked"
         with self.assertRaises(contract.ContractError):
             contract.confirm_adapter_plan(checked, plan["plan_id"])
+
+    def test_ollama_defaults_and_missing_model_error(self) -> None:
+        extractor = app.OllamaIntentExtractor()
+        self.assertEqual(extractor.model, "gemma4:12b")
+        self.assertEqual(extractor.timeout, 180.0)
+        override = app.OllamaIntentExtractor(model="custom:model", timeout=7.0)
+        self.assertEqual(override.model, "custom:model")
+        self.assertEqual(override.timeout, 7.0)
+
+        error = app.urllib_error.HTTPError(extractor.url, 404, "model not found", {}, None)
+        with mock.patch.object(app.urllib_request, "urlopen", side_effect=error) as urlopen:
+            with self.assertRaises(app.OllamaError) as raised:
+                extractor.extract("I was sick on July 15, 2026")
+        self.assertEqual(raised.exception.code, "ollama_model_not_found")
+        request_body = json.loads(urlopen.call_args.args[0].data)
+        self.assertIs(request_body["think"], False)
+        self.assertEqual(urlopen.call_args.kwargs["timeout"], 180.0)
+
     def test_http_preview_exists_but_submission_route_does_not(self) -> None:
         fake = FakeOllama(work_intent("2026-07-15"))
         server = app.make_server("127.0.0.1", 0, fake, app.JsonlLogger(self.log_path))

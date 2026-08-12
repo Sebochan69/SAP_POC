@@ -12,7 +12,9 @@ from urllib import error as urllib_error
 from urllib import request as urllib_request
 
 DEFAULT_OLLAMA_URL = "http://127.0.0.1:11434/api/generate"
-DEFAULT_OLLAMA_MODEL = "llama3.2:3b"
+DEFAULT_OLLAMA_MODEL = "gemma4:12b"
+# 180 seconds gives cold CPU inference headroom; OLLAMA_TIMEOUT_SECONDS overrides it.
+DEFAULT_OLLAMA_TIMEOUT_SECONDS = 180.0
 DEFAULT_LOG_PATH = Path("logs/app.jsonl")
 MAX_BODY_BYTES = 32 * 1024
 MAX_USER_CHARS = 2_000
@@ -455,14 +457,12 @@ def validate_intent(payload: Any) -> dict[str, Any]:
             else None,
         },
     }
-
-
 class OllamaIntentExtractor:
     def __init__(
         self,
         url: str = DEFAULT_OLLAMA_URL,
         model: str = DEFAULT_OLLAMA_MODEL,
-        timeout: float = 30.0,
+        timeout: float = DEFAULT_OLLAMA_TIMEOUT_SECONDS,
     ) -> None:
         self.url = url
         self.model = model
@@ -474,6 +474,7 @@ class OllamaIntentExtractor:
             "prompt": OLLAMA_PROMPT + "\nUSER_REQUEST:\n" + user_text + "\nEND_USER_REQUEST",
             "stream": False,
             "format": "json",
+            "think": False,
             "options": {"temperature": 0},
         }
         request = urllib_request.Request(
@@ -486,6 +487,8 @@ class OllamaIntentExtractor:
             with urllib_request.urlopen(request, timeout=self.timeout) as response:
                 raw_response = response.read(64 * 1024)
         except urllib_error.HTTPError as error:
+            if error.code == 404:
+                raise OllamaError("ollama_model_not_found") from error
             raise OllamaError("ollama_http_error") from error
         except (urllib_error.URLError, TimeoutError, OSError):
             raise OllamaError("ollama_unavailable")
@@ -860,7 +863,9 @@ def main() -> None:
     extractor = OllamaIntentExtractor(
         url=os.environ.get("OLLAMA_URL") or DEFAULT_OLLAMA_URL,
         model=os.environ.get("OLLAMA_MODEL") or DEFAULT_OLLAMA_MODEL,
-        timeout=float(os.environ.get("OLLAMA_TIMEOUT_SECONDS", "30")),
+        timeout=float(
+            os.environ.get("OLLAMA_TIMEOUT_SECONDS", str(DEFAULT_OLLAMA_TIMEOUT_SECONDS))
+        ),
     )
     logger = JsonlLogger(os.environ.get("SARAP_LOG_PATH") or DEFAULT_LOG_PATH)
     try:

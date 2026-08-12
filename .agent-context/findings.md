@@ -61,3 +61,12 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - User input still required: confirm the approved non-secret environment/session boundary and later perform login/MFA personally in a watched session; never provide credentials, cookies, or tokens to OMP.
 - Pi/SAP/security input still required: written answers to all Q1–Q11, evidence-backed discovery/side-effect classifications, normalized read mappings, retention/abort rules, and explicit authorization for the next gate.
 - Existing Feature 6A dry-run behavior and its last verified 33-test result remain unchanged. No browser or visual verification was performed or claimed.
+
+## Ollama preview bugfix findings
+
+- Local `/api/tags` showed installed `gemma4:12b` and `gemma4:26b`; the previous default `llama3.2:3b` was absent.
+- `app.py` now defaults to `gemma4:12b` and 180 seconds for cold local CPU inference; `OLLAMA_MODEL` and `OLLAMA_TIMEOUT_SECONDS` overrides remain available.
+- Gemma4 structured extraction uses `think: false`; without it, an observed full prompt response violated the strict intent schema, while the non-thinking response passed validation.
+- Ollama generate HTTP 404 is surfaced as `ollama_model_not_found`; other HTTP errors remain `ollama_http_error`.
+- `verify.py` passes 34 deterministic tests, compilation passes, and the default-model local `/api/preview` smoke request returned HTTP 200 with leave code `0200` and planned date `2026-07-15` in 47.78 seconds.
+- The UI and preview API are served by one Python `app.py` process; Ollama is the separate localhost model service. No browser, SAP, or live integration behavior was added or verified.

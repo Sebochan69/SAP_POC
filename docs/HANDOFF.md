@@ -115,3 +115,18 @@ Status: **BLOCKED — preflight/documentation only.** The complete gate checklis
 Remaining inputs are Q1–Q11 from the Feature 5 plan: approved non-secret environment/session boundary (Pi + SAP environment owner, confirmed by the user), evidence-backed UI labels/selectors (OMP discovery + SAP UI owner), `Check` side-effect classification (SAP process owner), lock/release semantics (SAP process owner), duplicate identity (SAP process owner + Pi), work/leave and partial-day reconciliation (Pi + SAP process owner), authoritative monthly/status mapping (SAP reporting owner), post-`Update` evidence (SAP process + audit owners), evidence retention (security/audit owner), abort/kill-switch procedure (Pi + security owner), and prompt-injection/action allowlisting (security owner + OMP).
 
 The user must confirm the watched-session/environment prerequisites and perform login/MFA personally when a later gate opens; no credentials, cookies, tokens, URLs, or selectors are requested or recorded here. Pi must record every answer and explicitly authorize implementation before any Edge/SAP work. Until then, only the local dry-run preview and documentation review are permitted.
+
+## Local Ollama preview fix
+
+The local model path now defaults to the installed `gemma4:12b`; `OLLAMA_MODEL` remains an explicit override. The default request timeout is 180 seconds to allow cold CPU model loading and inference, while `OLLAMA_TIMEOUT_SECONDS` remains an override. Structured Gemma4 extraction sends `think: false` so the JSON-only contract is usable. Ollama generate HTTP 404 responses now return `ollama_model_not_found`; other HTTP failures remain `ollama_http_error`.
+
+The frontend and backend are not separate deployments. One `app.py` Python process serves the HTML page at `GET /` and the JSON preview API at `POST /api/preview`; that process calls the separate local Ollama service at `127.0.0.1:11434`.
+
+Verification:
+
+```bash
+python3 verify.py
+python3 -m py_compile app.py verify.py integration_contract.py
+```
+
+Result: **PASS — 34 deterministic tests passed; compilation passed.** An actual local default-model smoke request to `POST /api/preview` with `gemma4:12b` returned HTTP 200, `request_kind: "leave"`, SAP code `0200`, and planned date `2026-07-15` in 47.78 seconds. No browser or visual verification is claimed. No SAP or live integration behavior was added.

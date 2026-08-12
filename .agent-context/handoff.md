@@ -44,3 +44,12 @@ Required user/Pi inputs:
 - Security owner + OMP: prompt-injection cases, allowlisted action policy, and confirmation requirements.
 
 No live code, browser dependency, connection, credential, selector, URL, `Check`, or `Update` action was added or used. Pi must record all answers and explicitly authorize the next gate.
+
+## Ollama preview bugfix
+
+- Default model is now installed `gemma4:12b`; `OLLAMA_MODEL` remains an override.
+- Default local inference timeout is 180 seconds with `OLLAMA_TIMEOUT_SECONDS` override. Gemma4 requests set `think: false` for the strict JSON extraction contract.
+- Ollama generate HTTP 404 maps to `ollama_model_not_found`; other HTTP failures remain `ollama_http_error`.
+- Frontend/backend are one `app.py` Python process: it serves HTML at `/` and `POST /api/preview`, then calls the separate local Ollama service. They are not separate deployments.
+- Verification passed: `python3 verify.py` ran 34 tests; `python3 -m py_compile app.py verify.py integration_contract.py` passed; default-model local `POST /api/preview` returned HTTP 200 with leave code `0200` and `2026-07-15` in 47.78 seconds.
+- No browser/SAP/live integration behavior was added or verified.
