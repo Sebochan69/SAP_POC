@@ -14,6 +14,7 @@ from typing import Any
 import app
 import integration_contract as contract
 import mock_adapter
+import mock_sap_sandbox
 
 
 class FakeOllama:
@@ -846,6 +847,26 @@ class FeatureVerification(unittest.TestCase):
             ):
                 self.assertNotIn(forbidden, source.lower())
 
+    def test_mock_sandbox_rejects_forbidden_imports_and_bind_host(self) -> None:
+        source = Path(mock_sap_sandbox.__file__).read_text(encoding="utf-8").lower()
+        for forbidden in (
+            "urllib",
+            "requests",
+            "selenium",
+            "playwright",
+            "urlopen",
+            "ollama",
+            "import app",
+            "from app",
+            "app.py",
+            "credentials",
+            "cookies",
+            "tokens",
+        ):
+            self.assertNotIn(forbidden, source)
+        with self.assertRaises(ValueError):
+            mock_sap_sandbox.SandboxServer(("0.0.0.0", 0))
+
 
     def test_ollama_defaults_and_missing_model_error(self) -> None:
         extractor = app.OllamaIntentExtractor()
@@ -859,10 +880,148 @@ class FeatureVerification(unittest.TestCase):
         with mock.patch.object(app.urllib_request, "urlopen", side_effect=error) as urlopen:
             with self.assertRaises(app.OllamaError) as raised:
                 extractor.extract("I was sick on July 15, 2026")
+
         self.assertEqual(raised.exception.code, "ollama_model_not_found")
         request_body = json.loads(urlopen.call_args.args[0].data)
         self.assertIs(request_body["think"], False)
         self.assertEqual(urlopen.call_args.kwargs["timeout"], 180.0)
+    def sandbox_request(
+        self,
+        connection: http.client.HTTPConnection,
+        method: str,
+        path: str,
+        payload: dict[str, Any] | None = None,
+    ) -> tuple[int, dict[str, Any] | str]:
+        headers = {"Content-Type": "application/json"} if payload is not None else {}
+        body = json.dumps(payload) if payload is not None else None
+        connection.request(method, path, body, headers)
+        response = connection.getresponse()
+        raw = response.read().decode("utf-8")
+        if response.getheader("Content-Type", "").startswith("text/html"):
+            return response.status, raw
+        return response.status, json.loads(raw)
+
+    def test_mock_sandbox_safe_flow_and_reset(self) -> None:
+        fixture_path = mock_adapter.DEFAULT_MOCK_FIXTURE_PATH
+        before = fixture_path.read_bytes()
+        server = mock_sap_sandbox.make_server()
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        connection = http.client.HTTPConnection(*server.server_address, timeout=5)
+        try:
+            status, page = self.sandbox_request(connection, "GET", "/")
+            self.assertEqual(status, 200)
+            self.assertIn("MOCK ONLY", page)
+            self.assertIn("not connected to sap", page.lower())
+
+            status, state = self.sandbox_request(connection, "GET", "/api/mock/state")
+            self.assertEqual(status, 200)
+            self.assertTrue(state["mock_only"])
+            self.assertFalse(state["fixture_mutated"])
+
+            status, plan_body = self.sandbox_request(connection, "GET", "/api/mock/plan?scenario=safe")
+            self.assertEqual(status, 200)
+            self.assertTrue(plan_body["mock_only"])
+            plan = plan_body["plan"]
+            self.assertEqual(plan["state"], "previewed")
+
+            status, checked = self.sandbox_request(connection, "POST", "/api/mock/check", {"plan": plan})
+            self.assertEqual(status, 200)
+            self.assertEqual(checked["state"], "mock_checked")
+            self.assertTrue(checked["mock_only"])
+
+            status, confirmed_body = self.sandbox_request(
+                connection,
+                "POST",
+                "/api/mock/confirm",
+                {"plan": plan, "plan_id": plan["plan_id"]},
+            )
+            self.assertEqual(status, 200)
+            self.assertEqual(confirmed_body["state"], "awaiting_confirmation")
+            confirmation = confirmed_body["confirmation"]
+
+            status, updated = self.sandbox_request(
+                connection,
+                "POST",
+                "/api/mock/update",
+                {"plan": confirmation},
+            )
+            self.assertEqual(status, 200)
+            self.assertEqual(updated["state"], "mock_submitted")
+            self.assertFalse(updated["fixture_mutated"])
+
+            status, reset = self.sandbox_request(connection, "POST", "/api/mock/reset", {})
+            self.assertEqual(status, 200)
+            self.assertEqual(reset["state"], "not_started")
+            self.assertFalse(reset["fixture_mutated"])
+
+            status, missing_submit = self.sandbox_request(connection, "POST", "/api/submit", {})
+            self.assertEqual(status, 404)
+            self.assertEqual(missing_submit["error"], "not_found")
+        finally:
+            connection.close()
+            server.shutdown()
+            server.server_close()
+            thread.join(timeout=5)
+        self.assertEqual(before, fixture_path.read_bytes())
+
+    def test_mock_sandbox_failure_scenarios_fail_closed(self) -> None:
+
+        server = mock_sap_sandbox.make_server()
+        thread = threading.Thread(target=server.serve_forever, daemon=True)
+        thread.start()
+        connection = http.client.HTTPConnection(*server.server_address, timeout=5)
+        try:
+            for scenario, expected in (
+                ("duplicate", "duplicate"),
+                ("locked", "locked"),
+                ("released", "released"),
+            ):
+                with self.subTest(scenario=scenario):
+                    status, plan_body = self.sandbox_request(
+                        connection,
+                        "GET",
+                        f"/api/mock/plan?scenario={scenario}",
+                    )
+                    self.assertEqual(status, 200)
+                    status, failed = self.sandbox_request(
+                        connection,
+                        "POST",
+                        "/api/mock/check",
+                        {"plan": plan_body["plan"]},
+                    )
+                    self.assertEqual(status, 409)
+                    self.assertTrue(failed["mock_only"])
+                    self.assertEqual(failed["error"], expected)
+                    self.assertFalse(failed["fixture_mutated"])
+        finally:
+            connection.close()
+            server.shutdown()
+            server.server_close()
+
+    def test_mock_sandbox_confirm_requires_successful_check(self) -> None:
+        sandbox = mock_sap_sandbox.SandboxState()
+        plan = sandbox.plan("safe")
+        with self.assertRaisesRegex(mock_sap_sandbox.SandboxError, "check_required"):
+            sandbox.confirm(plan, plan["plan_id"])
+        self.assertEqual(sandbox.lifecycle_state, "failed")
+        confirmation = contract.confirm_adapter_plan(plan, plan["plan_id"])
+        with self.assertRaisesRegex(mock_sap_sandbox.SandboxError, "invalid_state"):
+            sandbox.update(confirmation)
+        self.assertEqual(sandbox.lifecycle_state, "failed")
+
+    def test_mock_sandbox_confirm_rejects_after_failed_check(self) -> None:
+        sandbox = mock_sap_sandbox.SandboxState()
+        plan = sandbox.plan("duplicate")
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "duplicate"):
+            sandbox.check(plan)
+        self.assertEqual(sandbox.lifecycle_state, "failed")
+        with self.assertRaisesRegex(mock_sap_sandbox.SandboxError, "check_required"):
+            sandbox.confirm(plan, plan["plan_id"])
+        confirmation = contract.confirm_adapter_plan(plan, plan["plan_id"])
+        with self.assertRaisesRegex(mock_sap_sandbox.SandboxError, "invalid_state"):
+            sandbox.update(confirmation)
+        self.assertEqual(sandbox.lifecycle_state, "failed")
 
     def test_http_preview_exists_but_submission_route_does_not(self) -> None:
         fake = FakeOllama(work_intent("2026-07-15"))

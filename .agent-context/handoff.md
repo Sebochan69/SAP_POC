@@ -85,6 +85,14 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 - `verify.py` passes 44 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py` passes.
 - Feature 6B remains blocked; the user confirmed no non-production SAP environment is available, so Q1 cannot open discovery. No browser, visual, SAP, Edge, network, or credential behavior was added or verified.
 
-## Feature 6E in progress
+## Feature 6E implemented and approved
 
-A separate localhost-only SAP-like sandbox is now specified in `.agent-context/task-06e-local-sandbox.md`. It will exercise mock contract/state handling only, remain in-memory and explicitly `MOCK ONLY`, and will not answer Feature 6B Q1–Q11.
+Feature 6E is an approved localhost-only sandbox slice. Pi re-review found no remaining blockers after the confirmation fail-closed fix. Its implementation remains separate from the application and is limited to local contract/state handling; Feature 6B stays blocked.
+
+- Safe flow returns `previewed -> mock_checked -> awaiting_confirmation -> mock_submitted`.
+- `safe`, `duplicate`, `locked`, and `released` scenarios use deterministic fixture dates; failure scenarios fail closed with their expected codes.
+- `SandboxState.confirm()` requires lifecycle state `mock_checked`, the matching successful checked plan, and the unchanged active preview; failed or unchecked confirmation marks the sandbox failed and clears the checked-plan marker.
+- Updates require lifecycle state `awaiting_confirmation`, so failed or unchecked plans cannot update.
+- Reset recreates the in-memory adapter. `config/mock_sap_2026.json` remains byte-identical; `/api/submit` remains 404.
+- `verify.py` passes 49 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py mock_sap_sandbox.py` passes.
+- Feature 6B remains blocked; this sandbox validates only local contract/state handling and does not validate SAP selectors, permissions, `Check` side effects, duplicate semantics, or production behavior. No browser or visual verification is claimed.

@@ -120,18 +120,6 @@ Feature 6C is approved as a local mock-only adapter because real SAP access is u
 
 Feature 6B remains **BLOCKED**. The user confirmed that no non-production SAP environment is available, so Q1 cannot open discovery. Its remaining Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
 
-## Feature 6E — local SAP-like sandbox
-
-A separate localhost-only sandbox is specified for controlled mock testing. It may exercise the local plan/check/confirmation/mock-update state machine and deterministic duplicate/locked/released failures, but it cannot validate real SAP selectors, permissions, `Check` side effects, duplicate semantics, or production behavior. All output must remain explicitly `MOCK ONLY`; Feature 6B stays blocked.
-
-Verification:
-
-```bash
-python3 verify.py
-python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py
-```
-
-Result: **PASS — 43 deterministic tests passed; compilation passed.** No browser or visual verification is claimed.
 ## Feature 6D implemented and approved
 
 `mock_demo.py` is a runnable local lifecycle demonstration using a standard-library-only executable and an in-memory validated preview. Pi review found no blockers. It exercises the approved mock adapter without invoking the application, model runtime, browser, SAP, Edge, credentials, network, or HTTP routes.
@@ -143,19 +131,27 @@ Result: **PASS — 43 deterministic tests passed; compilation passed.** No brows
 
 Feature 6B remains **BLOCKED**. The user confirmed that no non-production SAP environment is available, so Q1 cannot open discovery. Its remaining Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
 
-## Feature 6E — local SAP-like sandbox
+## Feature 6E implemented and approved — local SAP-like sandbox
 
-A separate localhost-only sandbox is specified for controlled mock testing. It may exercise the local plan/check/confirmation/mock-update state machine and deterministic duplicate/locked/released failures, but it cannot validate real SAP selectors, permissions, `Check` side effects, duplicate semantics, or production behavior. All output must remain explicitly `MOCK ONLY`; Feature 6B stays blocked.
+Pi re-review found no remaining blockers after confirmation was made fail-closed. `mock_sap_sandbox.py` is a separate standard-library-only localhost sandbox bound to `127.0.0.1`. It provides an explicitly `MOCK ONLY` UI and JSON endpoints for state, deterministic scenarios, Check, exact confirmation, one-row in-memory update, and reset.
+
+- Safe flow: `previewed -> mock_checked -> awaiting_confirmation -> mock_submitted`.
+- `duplicate`, `locked`, and `released` scenarios fail closed with their expected error codes.
+- `SandboxState.confirm()` requires lifecycle state `mock_checked`, a matching successful checked plan, and the unchanged active preview. Unchecked or failed confirmations return `check_required`, mark state `failed`, and clear the checked-plan marker.
+- Updates require lifecycle state `awaiting_confirmation`, so unchecked or failed plans cannot update.
+- All plans and adapter state are in memory; the source fixture remains byte-identical. `/api/submit` remains 404 and `app.py` was not edited.
+- This validates only local contract/state/API handling. It does not answer Feature 6B Q1–Q11 or validate real SAP selectors, permissions, `Check` side effects, duplicate semantics, or production behavior.
 
 Verification:
 
 ```bash
 python3 mock_demo.py
 python3 verify.py
-python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py
+python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py mock_sap_sandbox.py
 ```
 
-Result: **PASS — demo lifecycle states verified; 44 deterministic tests passed; compilation passed.** No browser or visual verification is claimed.
+Result: **PASS — sandbox tests included; 49 deterministic tests passed; compilation passed; fixture checksum unchanged.** No browser or visual verification is claimed.
+
 ## Feature 6B preflight
 
 Status: **BLOCKED — preflight/documentation only.** The complete gate checklist is `.agent-context/feature6b-gates.md`.

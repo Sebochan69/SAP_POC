@@ -109,3 +109,13 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - The demo prints an explicit `MOCK ONLY` label and `fixture_mutated: false`; source fixture bytes/checksum and the adapter's immutable fixture copy remain unchanged.
 - `verify.py` passes 44 deterministic tests, including subprocess output, fixture immutability, forbidden-import checks, and `/api/submit` 404 coverage. All five Python modules compile.
 - Feature 6B remains blocked; no browser or visual verification is claimed.
+
+## Feature 6E local SAP-like sandbox (approved)
+
+- Pi re-review found no remaining blockers after the confirmation fail-closed fix. `mock_sap_sandbox.py` binds only to `127.0.0.1`, uses Python standard-library HTTP primitives, and keeps all plans/adapter state in memory.
+- The safe scenario exercises `previewed` → `mock_checked` → `awaiting_confirmation` → `mock_submitted`; duplicate, locked, and released scenarios return `409` with `duplicate`, `locked`, and `released`.
+- `SandboxState.confirm()` now requires `mock_checked`, a matching successful `checked_plan_id`, and the unchanged active preview; unchecked or failed checks return `check_required`, mark state `failed`, and clear the checked marker.
+- `SandboxState.update()` requires `awaiting_confirmation`, preventing unchecked or failed plans from updating.
+- HTML, state, plan, action, and reset responses remain explicitly mock-only; `/api/submit` is 404 and no `app.py` route changed.
+- `verify.py` passes 49 tests, compilation passes, and the source fixture checksum remains `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
+- This tests local contract/state/API handling only. It does not answer Feature 6B Q1–Q11 or validate SAP selectors, permissions, side effects, duplicate semantics, or production behavior. No browser or visual verification is claimed.
