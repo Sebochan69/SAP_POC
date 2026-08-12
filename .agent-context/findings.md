@@ -70,3 +70,12 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - Ollama generate HTTP 404 is surfaced as `ollama_model_not_found`; other HTTP errors remain `ollama_http_error`.
 - `verify.py` passes 34 deterministic tests, compilation passes, and the default-model local `/api/preview` smoke request returned HTTP 200 with leave code `0200` and planned date `2026-07-15` in 47.78 seconds.
 - The UI and preview API are served by one Python `app.py` process; Ollama is the separate localhost model service. No browser, SAP, or live integration behavior was added or verified.
+
+## Explicit-year no-guessing guard findings
+
+- Installed Gemma4 can return HTTP 200 with an invented year for input containing only a month and day.
+- `app.py` now validates model date years against explicit four-digit year tokens in the original user text at the preview boundary.
+- Missing explicit years and mismatched model years force an unresolved date range before expansion, so clarification responses contain no eligible or planned dates.
+- Existing explicit-year leave/work and calendar handling remains covered by the prior regression suite.
+- `verify.py` passes 36 deterministic tests; compilation passes; the exact no-year local HTTP request returned HTTP 200 clarification with no planned dates in 52.05 seconds.
+- The prior `ollama_http_error` may have been produced by a stale long-running app process; restart with `Ctrl+C` and `python3 app.py` after updates. No browser/SAP/live integration behavior was added or verified.

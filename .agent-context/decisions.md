@@ -47,3 +47,8 @@
 - Send `think: false` with the strict JSON prompt so Gemma4 returns a schema-valid extraction instead of spending the request on hidden reasoning/output drift.
 - Map Ollama generate HTTP 404 to `ollama_model_not_found`; preserve `ollama_http_error` for other HTTP failures.
 - Treat the local UI and preview API as one `app.py` process serving HTML at `/` and JSON at `/api/preview`; only Ollama is a separate localhost service, not a separate frontend/backend deployment.
+
+- Trust model dates only when their four-digit years exactly match the explicit year tokens in the original user text; no explicit year means unresolved date clarification.
+- Apply the year guard before holiday/calendar expansion so guessed dates cannot become eligible, planned, or work-entry dates.
+- Preserve existing explicit-year leave/work and calendar behavior; no SAP/Edge/browser path is involved.
+- After code updates, the user must stop the old Python process with `Ctrl+C` and restart `python3 app.py`; the previous `ollama_http_error` may have come from stale process code.

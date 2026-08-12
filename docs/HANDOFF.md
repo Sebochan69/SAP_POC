@@ -130,3 +130,11 @@ python3 -m py_compile app.py verify.py integration_contract.py
 ```
 
 Result: **PASS — 34 deterministic tests passed; compilation passed.** An actual local default-model smoke request to `POST /api/preview` with `gemma4:12b` returned HTTP 200, `request_kind: "leave"`, SAP code `0200`, and planned date `2026-07-15` in 47.78 seconds. No browser or visual verification is claimed. No SAP or live integration behavior was added.
+
+## Explicit-year no-guessing guard
+
+The preview boundary now extracts explicit four-digit year tokens from the original user text. If no year is present, or the validated model date years do not exactly match the explicit year set, the date range is replaced with unresolved `null` values before calendar expansion. The result is a clarification with no eligible or planned dates. Explicit-year leave/work requests retain the existing calendar and year handling.
+
+Focused regressions cover a model-invented year for `i will take a leave on Aug 20` and a model year that conflicts with an explicit `2026`. Verification now passes **36 deterministic tests**. The exact local HTTP smoke returned HTTP 200 with `kind: "clarification"`, a null date range, and no planned dates in 52.05 seconds.
+
+The previous `ollama_http_error` may have come from an old long-running `app.py` process. After updates, stop it with `Ctrl+C` and restart `python3 app.py`; the process does not reload source changes automatically. No browser or visual verification is claimed.

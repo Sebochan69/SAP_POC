@@ -274,6 +274,29 @@ class FeatureVerification(unittest.TestCase):
         self.assertEqual(result["kind"], "clarification")
         self.assertIn("What date", result["clarifications"][0])
 
+
+    def test_model_hallucinated_year_is_rejected_without_explicit_year(self) -> None:
+        result = self.preview(
+            intent("2024-08-20", "sickness", "full_day"),
+            "i will take a leave on Aug 20",
+        )
+        self.assertEqual(result["kind"], "clarification")
+        self.assertEqual(result["date_range"], {"start": None, "end": None})
+        self.assertEqual(result["eligible_dates"], [])
+        self.assertEqual(result["planned_dates"], [])
+        self.assertIn("What date", result["clarifications"][0])
+
+    def test_model_year_must_match_explicit_user_year(self) -> None:
+        result = self.preview(
+            intent("2024-08-20", "sickness", "full_day"),
+            "I will take a leave on Aug 20, 2026",
+        )
+        self.assertEqual(result["kind"], "clarification")
+        self.assertEqual(result["date_range"], {"start": None, "end": None})
+        self.assertEqual(result["eligible_dates"], [])
+        self.assertEqual(result["planned_dates"], [])
+        self.assertIn("What date", result["clarifications"][0])
+
     def test_existing_date_is_removed_and_reported(self) -> None:
         snapshot = existing_snapshot("2026-07-15")
         result = self.preview(

@@ -19,6 +19,7 @@ DEFAULT_LOG_PATH = Path("logs/app.jsonl")
 MAX_BODY_BYTES = 32 * 1024
 MAX_USER_CHARS = 2_000
 DATE_PATTERN = re.compile(r"^\d{4}-\d{2}-\d{2}$")
+YEAR_TOKEN_PATTERN = re.compile(r"\b\d{4}\b")
 LEAVE_CODES = {"sickness": "0200", "paid_leave": "0600"}
 DRY_RUN_WARNING = "Dry-run only: no SAP or Edge action is available."
 DEFAULT_HOLIDAY_CONFIG_PATH = Path(__file__).with_name("config") / "philippine_holidays_2026.json"
@@ -200,6 +201,17 @@ def _strict_date(value: Any) -> str | None:
     except ValueError:
         _invalid_model()
     return value
+
+
+def _model_date_years_match_user_text(
+    user_text: str, date_range: dict[str, str | None]
+) -> bool:
+    explicit_years = {int(value) for value in YEAR_TOKEN_PATTERN.findall(user_text)}
+    start = date_range["start"]
+    end = date_range["end"]
+    if not explicit_years or start is None or end is None:
+        return False
+    return {int(start[:4]), int(end[:4])} == explicit_years
 
 
 def load_holiday_calendar(path: str | Path = DEFAULT_HOLIDAY_CONFIG_PATH) -> dict[str, Any]:
@@ -591,6 +603,9 @@ def build_preview(
     except ValidationError as error:
         logger.event("validate", "error", error_code=error.code)
         raise
+
+    if not _model_date_years_match_user_text(user_text, intent["date_range"]):
+        intent["date_range"] = {"start": None, "end": None}
     request_kind = intent["request_kind"]
     logger.event(
         "validate",

@@ -53,3 +53,12 @@ No live code, browser dependency, connection, credential, selector, URL, `Check`
 - Frontend/backend are one `app.py` Python process: it serves HTML at `/` and `POST /api/preview`, then calls the separate local Ollama service. They are not separate deployments.
 - Verification passed: `python3 verify.py` ran 34 tests; `python3 -m py_compile app.py verify.py integration_contract.py` passed; default-model local `POST /api/preview` returned HTTP 200 with leave code `0200` and `2026-07-15` in 47.78 seconds.
 - No browser/SAP/live integration behavior was added or verified.
+
+## Explicit-year no-guessing guard
+
+- The preview boundary extracts explicit four-digit year tokens from the original user input.
+- If no year exists, or model date years do not exactly match the explicit year set, the date range is forced to `{"start": null, "end": null}` before calendar expansion; no eligible or planned dates are produced.
+- Explicit-year leave/work requests retain existing calendar handling.
+- Focused regressions cover the no-year Gemma hallucination and mismatched-year cases. Verification passes 36 tests and compilation; exact `i will take a leave on Aug 20` local HTTP smoke returned 200 clarification with no planned dates in 52.05 seconds.
+- The prior `ollama_http_error` may have been from an old `app.py` process. User must `Ctrl+C` and restart `python3 app.py` after updates; source changes are not hot-reloaded.
+- No browser/SAP/live integration behavior was added or verified.
