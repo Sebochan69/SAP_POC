@@ -39,9 +39,18 @@ No live adapter code may be written or run until Pi records all required answers
 - `Update`/submission is not allowed in this task without a separately approved write gate.
 - No browser or visual verification may be claimed unless it actually succeeds.
 
+## How to finish 6B
+
+6B has two honest outcomes:
+
+- **Finish live:** obtain an approved non-production SAP environment from an SAP environment owner, answer and approve Q1–Q11, then execute the gated phases in order: read-only discovery, read-only monthly/duplicate reads, user-watched Check only if proven non-mutating, and finally one explicitly confirmed row update with reliable postcondition evidence. Bulk remains separate.
+- **Finish the POC:** stop at Feature 6E and mark 6B not implemented because no suitable SAP environment exists. The local sandbox is not SAP evidence.
+
+The user does not need to supply credentials to this project. If a live path opens, the user personally opens the approved Edge session and performs login/MFA while remaining present. Owners provide rules/evidence; Pi records approvals; OMP implements only after authorization.
+
 ## Acceptance for this gated step
 
-- A clear gate artifact exists with owners and missing answers.
+- A clear gate artifact exists with owners, missing answers, an unblock plan, and hard stops.
 - No live code, connection, credential, dependency, or submission is added.
 - Existing `python3 verify.py` and Feature 6A contract behavior remain unchanged.
 - Handoff says implementation is blocked pending the listed user/Pi inputs.

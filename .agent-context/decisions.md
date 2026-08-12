@@ -68,3 +68,4 @@
 - The sandbox may exercise local safe/duplicate/locked/released state handling and exact Feature 6A confirmation, but cannot answer Feature 6B Q1–Q11 or validate SAP UI/permissions/side effects/production behavior.
 - Confirmation in Feature 6E is fail-closed: `SandboxState.confirm()` requires `mock_checked`, the matching successful checked plan, and the unchanged active preview; failed or unchecked confirmation transitions to `failed` and clears the checked-plan marker.
 - `SandboxState.update()` requires `awaiting_confirmation`; failed or unchecked plans cannot update.
+- Feature 6B completion requires an approved non-production SAP environment, written Q1–Q11 owner answers, Pi authorization, and gated watched phases. Without that, Feature 6E is the honest local/mock endpoint and 6B remains unimplemented.

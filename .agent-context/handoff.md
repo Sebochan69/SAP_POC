@@ -85,6 +85,10 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 - `verify.py` passes 44 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py` passes.
 - Feature 6B remains blocked; the user confirmed no non-production SAP environment is available, so Q1 cannot open discovery. No browser, visual, SAP, Edge, network, or credential behavior was added or verified.
 
+## Feature 6B completion path
+
+6B can finish only through an approved non-production SAP environment plus written Q1–Q11 owner answers and Pi authorization, followed by watched read-only discovery, read-only reconciliation, safe Check, and one-row explicitly confirmed Update with postcondition evidence. If no environment can be provided, the honest endpoint is Feature 6E: local/mock POC complete, 6B not implemented.
+
 ## Feature 6E implemented and approved
 
 Feature 6E is an approved localhost-only sandbox slice. Pi re-review found no remaining blockers after the confirmation fail-closed fix. Its implementation remains separate from the application and is limited to local contract/state handling; Feature 6B stays blocked.

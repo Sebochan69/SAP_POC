@@ -160,6 +160,15 @@ Remaining inputs are Q1–Q11 from the Feature 5 plan: approved non-secret envir
 
 The user must confirm the watched-session/environment prerequisites and perform login/MFA personally when a later gate opens; no credentials, cookies, tokens, URLs, or selectors are requested or recorded here. Pi must record every answer and explicitly authorize implementation before any Edge/SAP work. Until then, only the local dry-run preview and documentation review are permitted.
 
+### How 6B finishes
+
+There are only two honest paths:
+
+1. **Live path:** an SAP owner provisions/approves a non-production environment; owners answer Q1–Q11; Pi authorizes Phase 0; then the watched rollout proceeds in order: read-only discovery, read-only reads, bounded non-mutating Check (only if proven safe), and one-row explicitly confirmed Update with reliable postcondition evidence. Bulk requires separate approval.
+2. **POC path:** stop at Feature 6E and record Feature 6B as not implemented because no suitable SAP environment exists. The sandbox cannot validate real SAP selectors, permissions, side effects, or production behavior.
+
+The user never sends credentials, MFA codes, cookies, tokens, or session exports to the project. If the live path becomes available, the user personally opens Edge and performs login/MFA while watching the session; owners provide business/security answers and Pi records approvals. Hard stops remain: no environment, unknown Check side effects, unknown Update evidence, uncertain identity/state, or missing owner approval.
+
 ## Local Ollama preview fix
 
 The local model path now defaults to the installed `gemma4:12b`; `OLLAMA_MODEL` remains an explicit override. The default request timeout is 180 seconds to allow cold CPU model loading and inference, while `OLLAMA_TIMEOUT_SECONDS` remains an override. Structured Gemma4 extraction sends `think: false` so the JSON-only contract is usable. Ollama generate HTTP 404 responses now return `ollama_model_not_found`; other HTTP failures remain `ollama_http_error`.
