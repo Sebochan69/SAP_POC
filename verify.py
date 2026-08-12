@@ -2,6 +2,8 @@ from __future__ import annotations
 
 import http.client
 import json
+import subprocess
+import sys
 import tempfile
 import threading
 import unittest
@@ -726,6 +728,24 @@ class FeatureVerification(unittest.TestCase):
                 with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_date_range"):
                     adapter.read_existing_entries(start, end)
 
+    def test_mock_demo_runs_complete_lifecycle(self) -> None:
+        fixture_path = mock_adapter.DEFAULT_MOCK_FIXTURE_PATH
+        before = fixture_path.read_bytes()
+        demo_path = Path(__file__).with_name("mock_demo.py")
+        completed = subprocess.run(
+            [sys.executable, str(demo_path)],
+            cwd=demo_path.parent,
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        self.assertEqual(completed.returncode, 0, completed.stderr)
+        for state in ("previewed", "mock_checked", "awaiting_confirmation", "mock_submitted"):
+            self.assertIn(state, completed.stdout)
+        self.assertIn("MOCK ONLY", completed.stdout)
+        self.assertIn('"fixture_mutated": false', completed.stdout)
+        self.assertEqual(before, fixture_path.read_bytes())
+
     def test_mock_duplicate_identity_is_date_only(self) -> None:
         plan = contract.build_adapter_plan(
             self.preview(
@@ -808,9 +828,23 @@ class FeatureVerification(unittest.TestCase):
         adapter.check_row(plan)
         with self.assertRaisesRegex(mock_adapter.MockAdapterError, "one_row_only"):
             adapter.update_row(plan, confirmed)
-        source = Path(mock_adapter.__file__).read_text(encoding="utf-8")
-        for forbidden in ("urllib", "requests", "selenium", "playwright", "urlopen"):
-            self.assertNotIn(forbidden, source)
+        sources = (
+            Path(mock_adapter.__file__).read_text(encoding="utf-8"),
+            Path(__file__).with_name("mock_demo.py").read_text(encoding="utf-8"),
+        )
+        for source in sources:
+            for forbidden in (
+                "urllib",
+                "requests",
+                "selenium",
+                "playwright",
+                "urlopen",
+                "import app",
+                "from app",
+                "app.py",
+                "ollama",
+            ):
+                self.assertNotIn(forbidden, source.lower())
 
 
     def test_ollama_defaults_and_missing_model_error(self) -> None:

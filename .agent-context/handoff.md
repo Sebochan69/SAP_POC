@@ -75,3 +75,12 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 - Feature 6B remains blocked; the mock does not answer any real SAP gate. No browser or visual verification is claimed.
 - Strict fixture numeric validation rejects non-finite `hours_per_day` values via `math.isfinite`, with deterministic Python and JSON `NaN` regressions.
 - Strict mock read-range validation rejects malformed, short, non-ISO, reversed, and invalid-calendar ranges with `invalid_date_range`.
+
+## Feature 6D implemented and approved
+
+`mock_demo.py` is a runnable standard-library-only local lifecycle demonstration. Pi review found no blockers. It builds an in-memory validated July 15, 2026 sickness preview, creates the Feature 6A plan, runs mock discovery and Check, confirms the exact plan ID, and performs one in-memory mock update.
+
+- Output is clearly labeled `MOCK ONLY` and includes `previewed`, `mock_checked`, `awaiting_confirmation`, `mock_submitted`, and `fixture_mutated: false`.
+- The demo verifies fixture bytes/checksum and the adapter's source fixture remain unchanged; no HTTP route or UI was added.
+- `verify.py` passes 44 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py` passes.
+- Feature 6B remains blocked; no browser, visual, SAP, Edge, network, or credential behavior was added or verified.

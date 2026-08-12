@@ -59,3 +59,7 @@
 - Mock duplicate identity is date-only and explicitly not SAP truth. Reads and actions carry `mock_only: true` and mock evidence references.
 - Simulated update requires a validated Feature 6A plan, exact `awaiting_confirmation`, successful mock Check, exactly one row, unlocked/unreleased status, and no duplicate/ambiguity; abort permanently disables further updates.
 - Feature 6B Q1–Q11 gates remain unanswered and blocked. `app.py`, `/api/preview`, and `/api/submit` stay unchanged.
+- Feature 6D is an approved local runnable mock lifecycle demo only; it must not call Ollama, SAP, Edge, network, credentials, or HTTP routes.
+- Feature 6D may only demonstrate the approved local mock lifecycle from an in-memory validated preview; its `mock_submitted` state is never real SAP submission evidence.
+- `mock_demo.py` must verify the fixture bytes/checksum before and after the simulated update and fail nonzero if the source fixture or immutable adapter fixture changes.
+- Feature 6B remains blocked; no browser, SAP, Edge, network, credentials, or HTTP route is authorized by the demo.

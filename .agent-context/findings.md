@@ -101,3 +101,11 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - The focused regression covers `xxxx-01-01`, a short `2026-01`, and `2026/01/01`; the existing reversed and invalid-calendar checks remain unchanged.
 - Full verification passes 43 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py` passes. No browser or visual verification was performed.
 - Feature 6C remains mock-only; `app.py`, `/api/preview`, `/api/submit`, fixture immutability, and Feature 6B blocked status are unchanged. No browser or visual verification is claimed.
+
+## Feature 6D local mock lifecycle demo (approved)
+
+- Pi review found no blockers. `mock_demo.py` uses a fully in-memory validated preview and the approved `MockSapAdapter`; it does not call the application, model runtime, browser, SAP, network, credentials, or HTTP routes.
+- The deterministic July 15, 2026 sickness plan completes `previewed` → `mock_checked` → `awaiting_confirmation` → `mock_submitted`.
+- The demo prints an explicit `MOCK ONLY` label and `fixture_mutated: false`; source fixture bytes/checksum and the adapter's immutable fixture copy remain unchanged.
+- `verify.py` passes 44 deterministic tests, including subprocess output, fixture immutability, forbidden-import checks, and `/api/submit` 404 coverage. All five Python modules compile.
+- Feature 6B remains blocked; no browser or visual verification is claimed.

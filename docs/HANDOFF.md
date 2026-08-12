@@ -128,10 +128,26 @@ python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py
 ```
 
 Result: **PASS — 43 deterministic tests passed; compilation passed.** No browser or visual verification is claimed.
-## Next feature
+## Feature 6D implemented and approved
 
-After Feature 6C review, decide whether to continue mock workflow polish or stop until SAP access is available.
+`mock_demo.py` is a runnable local lifecycle demonstration using a standard-library-only executable and an in-memory validated preview. Pi review found no blockers. It exercises the approved mock adapter without invoking the application, model runtime, browser, SAP, Edge, credentials, network, or HTTP routes.
 
+- The demo uses July 15, 2026 sickness (`0200`) because the mock fixture has an unlocked/unreleased July status and no row on that date.
+- Output is clearly labeled `MOCK ONLY` and includes `previewed`, `mock_checked`, `awaiting_confirmation`, `mock_submitted`, and `fixture_mutated: false`.
+- Fixture bytes/checksum and the adapter's immutable source fixture remain unchanged; `POST /api/submit` remains 404.
+- Forbidden-import coverage rejects browser/network/application/model-runtime imports in the mock adapter and demo.
+
+Feature 6B remains **BLOCKED**. Its unanswered Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
+
+Verification:
+
+```bash
+python3 mock_demo.py
+python3 verify.py
+python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py
+```
+
+Result: **PASS — demo lifecycle states verified; 44 deterministic tests passed; compilation passed.** No browser or visual verification is claimed.
 ## Feature 6B preflight
 
 Status: **BLOCKED — preflight/documentation only.** The complete gate checklist is `.agent-context/feature6b-gates.md`.
