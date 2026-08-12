@@ -104,9 +104,33 @@ python3 -m py_compile app.py verify.py integration_contract.py
 
 Result: **PASS — 33 tests passed; compilation passed.** No browser or visual verification is claimed.
 
+## Feature 6C mock POC
+
+Feature 6C is approved as a local mock-only adapter because real SAP access is unavailable. It is a deterministic in-memory POC and does not answer or bypass Feature 6B.
+
+- `mock_adapter.py` loads and strictly validates `config/mock_sap_2026.json`.
+- The fixture is immutable; simulated updates append only to an in-memory copy.
+- `MockSapAdapter` exposes clearly marked mock-only discovery, existing-entry, monthly-status, Check, exact Feature 6A confirmation, one-row simulated update, and abort/kill-switch paths.
+- Date-only duplicate identity is documented as mock behavior, not SAP truth.
+- Duplicate, locked, released, ambiguous, stale, invalid, multi-row, and aborted paths fail closed.
+- Results use `mock_only: true`, mock evidence references, and `mock_submitted`; no real `submitted` state or production route was added.
+- `POST /api/submit` remains 404. `app.py` and live HTTP behavior remain unchanged.
+- Strict numeric fixture validation rejects non-finite `hours_per_day` values via `math.isfinite`; deterministic regressions cover Python NaN/infinities and JSON `NaN`.
+- Strict read-range validation rejects malformed, short, non-ISO, reversed, and invalid-calendar ranges as `invalid_date_range`; deterministic regression covers malformed, short, and non-ISO inputs.
+
+Feature 6B remains **BLOCKED**. Its unanswered Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
+
+Verification:
+
+```bash
+python3 verify.py
+python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py
+```
+
+Result: **PASS — 43 deterministic tests passed; compilation passed.** No browser or visual verification is claimed.
 ## Next feature
 
-Feature 6B (live adapter, Edge launch, SAP connection, credential use, or submission) is not approved.
+After Feature 6C review, decide whether to continue mock workflow polish or stop until SAP access is available.
 
 ## Feature 6B preflight
 

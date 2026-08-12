@@ -1,47 +1,99 @@
-# Feature 6B — Live SAP/Edge adapter (gated)
+# Feature 6C — Local mock SAP adapter for POC
 
 ## Owner
 
-OMP owns implementation when the gates are answered. Pi coordinates and reviews. The user must provide/confirm environment access and remain present for any watched session.
+OMP implements this local mock. Pi reviews it. This replaces blocked live Feature 6B work for the POC; it does not answer or bypass the real SAP gates.
 
-## Current status
+## Context
 
-Delegated to OMP, but **blocked before live implementation**. Feature 6A is approved; its offline contract is preserved in `.agent-context/task-06a-offline-contract.md`. The Feature 5 plan is `docs/INTEGRATION_PLAN.md`.
+Features 1–6A are approved. Feature 6B remains blocked and preserved in `.agent-context/task-06b-live-gates.md`, `.agent-context/feature6b-gates.md`, and `docs/INTEGRATION_PLAN.md`. No SAP environment access is available/assumed.
 
-Current missing gates:
+## Goal
 
-- approved non-secret SAP test URL/environment and environment allowlist;
-- available user-watched Microsoft Edge session/browser bridge;
-- manual login/MFA performed by the user (never supplied to OMP, Ollama, files, or logs);
-- evidence-backed DOM/accessibility discovery for the approved environment;
-- written classification of `Check` as read-only or mutating;
-- duplicate identity, lock/release semantics, post-Update evidence, abort, and audit/retention answers from the Feature 5 questions.
+Build a deterministic local mock of the future browser adapter so the POC can exercise read, duplicate, lock/release, Check, confirmation, Update, and failure flows without Edge, SAP, credentials, network, or browser dependencies.
 
-## Delegated first step
+## Hard safety boundary
 
-Until the gates are supplied, do **preflight/documentation only**:
+- Mock only. Never import browser libraries, launch Edge, call SAP, use network, read credentials, invent SAP URLs/selectors, or enable production submission.
+- Keep `app.py` and `POST /api/preview` unchanged unless a pure local test seam is absolutely necessary; prefer a separate `mock_adapter.py` module.
+- The mock must be visibly named/mock-marked in output and docs. It must never be presented as SAP behavior.
+- Do not change the live Feature 6B gate artifact to claim any real gate is answered.
 
-1. Read `docs/INTEGRATION_PLAN.md`, `AGENTS.md`, and the preserved Feature 1–6A task files.
-2. Record the gate checklist and current blocked status in `.agent-context/feature6b-gates.md` or an equivalent handoff artifact.
-3. Do not edit `app.py`, `verify.py`, or `integration_contract.py` for live behavior.
-4. Do not launch Edge, connect to SAP, make network calls, add browser dependencies, use credentials/cookies/tokens, invent URLs/selectors, or click `Check`/`Update`.
-5. Report exactly what input is still required before implementation can begin.
+## Mock fixture schema
 
-## Implementation gate
+Add a local JSON fixture under `config/`, e.g. `config/mock_sap_2026.json`, with exact validated top-level keys:
 
-No live adapter code may be written or run until Pi records all required answers and explicitly authorizes the next step. When authorized, implementation must follow `docs/INTEGRATION_PLAN.md` phases, beginning with read-only discovery, user-watched operation, deterministic preview input, no overwrite, no unattended retry, kill switch, and explicit row-level confirmation before any mutating action.
+```json
+{
+  "kind": "mock_sap_fixture",
+  "name": "Local mock SAP 2026",
+  "year": 2026,
+  "entries": [
+    {
+      "date": "2026-07-16",
+      "entry_kind": "work",
+      "leave_code": null,
+      "favorite_code": "MOCK-WBS-1",
+      "hours_per_day": 8,
+      "billable": true,
+      "task_description": "Existing mock row",
+      "state": "booked"
+    }
+  ],
+  "monthly_status": [
+    {
+      "month": "2026-07",
+      "locked_status": "unlocked",
+      "release_status": "unreleased"
+    }
+  ]
+}
+```
 
-## Safety requirements for later work
+Validate exact keys, dates/months, year consistency, allowed entry kinds/states, optional field types, unique row identity, and unique dates only where the fixture declares them unique. Do not reuse production names/URLs.
 
-- Credentials and MFA remain entirely in the user-controlled Edge session.
-- The future adapter consumes validated `integration_contract.py` plans; it never interprets raw user/page text as commands.
-- Unknown, locked, released, duplicate, stale-page, timeout, DOM-drift, or uncertain-write states fail closed.
-- `Update`/submission is not allowed in this task without a separately approved write gate.
-- No browser or visual verification may be claimed unless it actually succeeds.
+## Required mock seam
 
-## Acceptance for this gated step
+Add `mock_adapter.py` with deterministic, pure-local functions/classes that:
 
-- A clear gate artifact exists with owners and missing answers.
-- No live code, connection, credential, dependency, or submission is added.
-- Existing `python3 verify.py` and Feature 6A contract behavior remain unchanged.
-- Handoff says implementation is blocked pending the listed user/Pi inputs.
+- load and validate the fixture;
+- expose a clearly marked `MockSapAdapter` with `discover_read_only()`, `read_existing_entries()`, and `read_monthly_status()`;
+- consume a validated Feature 6A adapter plan only—not raw text;
+- compare planned rows by a documented mock identity rule (at minimum date; expose this as mock behavior, not SAP truth);
+- return normalized redacted read results and mock evidence references;
+- support `check_row()` as a simulated validation-only result with an explicit `mock_only` marker;
+- require the Feature 6A exact plan confirmation result (`awaiting_confirmation`) before simulated update;
+- support one-row simulated update only, return state/evidence, and never mutate the fixture file; use an in-memory copy;
+- stop/fail closed for duplicate, locked, released, ambiguous, stale/mismatched plan, invalid row, or uncertain mock outcome;
+- expose abort/kill-switch behavior that prevents further simulated updates.
+
+Use explicit mock action states and result fields; never claim `submitted` means real SAP. Prefer `mock_submitted` or a `mock_only: true` marker alongside any state.
+
+## Tests / verification
+
+Extend `python3 verify.py` or add focused standard-library tests for:
+
+- fixture validation and malformed/duplicate/invalid state rejection;
+- read-only discovery and normalized existing/monthly results marked mock-only;
+- duplicate skip by mock date identity;
+- unlocked/unreleased row can be checked, then simulated update only after exact confirmation;
+- missing/stale confirmation, locked/released/duplicate row, and abort kill switch fail closed;
+- fixture file remains unchanged after simulated update;
+- no browser/SAP/network imports or calls; `/api/submit` remains 404;
+- all existing tests remain passing.
+
+Run:
+
+```bash
+python3 verify.py
+python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py
+```
+
+No Ollama, network, SAP, Edge, browser, credentials, or visual verification required.
+
+## Acceptance criteria
+
+- The POC can demonstrate the future adapter lifecycle entirely locally with unmistakable mock output.
+- No real SAP gate is claimed as answered; Feature 6B remains blocked.
+- No production submission route or side effect is added.
+- Handoffs/findings/decisions document mock-only scope and the next action.

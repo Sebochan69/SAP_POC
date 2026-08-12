@@ -1,0 +1,54 @@
+{
+  "kind": "mock_sap_fixture",
+  "name": "Local mock SAP 2026",
+  "year": 2026,
+  "entries": [
+    {
+      "date": "2026-07-16",
+      "entry_kind": "work",
+      "leave_code": null,
+      "favorite_code": "MOCK-WBS-1",
+      "hours_per_day": 8,
+      "billable": true,
+      "task_description": "Existing mock row",
+      "state": "booked"
+    },
+    {
+      "date": "2026-08-17",
+      "entry_kind": "leave",
+      "leave_code": "0200",
+      "favorite_code": null,
+      "hours_per_day": null,
+      "billable": null,
+      "task_description": null,
+      "state": "booked"
+    },
+    {
+      "date": "2026-09-01",
+      "entry_kind": "leave",
+      "leave_code": "0600",
+      "favorite_code": null,
+      "hours_per_day": null,
+      "billable": null,
+      "task_description": null,
+      "state": "booked"
+    }
+  ],
+  "monthly_status": [
+    {
+      "month": "2026-07",
+      "locked_status": "unlocked",
+      "release_status": "unreleased"
+    },
+    {
+      "month": "2026-08",
+      "locked_status": "locked",
+      "release_status": "unreleased"
+    },
+    {
+      "month": "2026-09",
+      "locked_status": "unlocked",
+      "release_status": "released"
+    }
+  ]
+}

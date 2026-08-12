@@ -11,6 +11,7 @@ from typing import Any
 
 import app
 import integration_contract as contract
+import mock_adapter
 
 
 class FakeOllama:
@@ -655,6 +656,162 @@ class FeatureVerification(unittest.TestCase):
         checked["state"] = "checked"
         with self.assertRaises(contract.ContractError):
             contract.confirm_adapter_plan(checked, plan["plan_id"])
+    def test_mock_fixture_validation_rejects_duplicates_and_bad_state(self) -> None:
+        fixture = mock_adapter.load_mock_fixture()
+        self.assertEqual(fixture["kind"], "mock_sap_fixture")
+        duplicate = json.loads(json.dumps(fixture))
+        duplicate["entries"].append(json.loads(json.dumps(fixture["entries"][0])))
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "duplicate_fixture_date"):
+            mock_adapter.validate_mock_fixture(duplicate)
+        invalid_state = json.loads(json.dumps(fixture))
+        invalid_state["entries"][0]["state"] = "unknown"
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_fixture_state"):
+            mock_adapter.validate_mock_fixture(invalid_state)
+
+        malformed = json.loads(json.dumps(fixture))
+        malformed["entries"][0]["date"] = "2025-07-16"
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_fixture_date"):
+            mock_adapter.validate_mock_fixture(malformed)
+        malformed = json.loads(json.dumps(fixture))
+        malformed["monthly_status"][0]["month"] = "2026-13"
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_fixture_month"):
+            mock_adapter.validate_mock_fixture(malformed)
+        malformed = json.loads(json.dumps(fixture))
+        malformed["entries"][0]["hours_per_day"] = "8"
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_fixture_entry"):
+            mock_adapter.validate_mock_fixture(malformed)
+
+        for value in (float("nan"), float("inf"), float("-inf")):
+            with self.subTest(value=value):
+                malformed = json.loads(json.dumps(fixture))
+                malformed["entries"][0]["hours_per_day"] = value
+                with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_fixture_entry"):
+                    mock_adapter.validate_mock_fixture(malformed)
+
+        json_nan_fixture = json.loads(
+            '{"kind":"mock_sap_fixture","name":"Local mock SAP 2026",'
+            '"year":2026,"entries":[{"date":"2026-07-16",'
+            '"entry_kind":"work","leave_code":null,"favorite_code":"MOCK-WBS-1",'
+            '"hours_per_day":NaN,"billable":true,"task_description":"Existing mock row",'
+            '"state":"booked"}],"monthly_status":[]}'
+        )
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_fixture_entry"):
+            mock_adapter.validate_mock_fixture(json_nan_fixture)
+
+    def test_mock_read_results_are_normalized_and_marked_mock_only(self) -> None:
+        adapter = mock_adapter.MockSapAdapter()
+        discovery = adapter.discover_read_only()
+        self.assertTrue(discovery["mock_only"])
+        self.assertIn("MOCK ONLY", discovery["warnings"][0])
+        existing = adapter.read_existing_entries("2026-07-01", "2026-07-31")
+        self.assertTrue(existing["mock_only"])
+        self.assertEqual(existing["entries"][0]["date"], "2026-07-16")
+        self.assertTrue(existing["entries"][0]["task_description_present"])
+        self.assertNotIn("Existing mock row", json.dumps(existing))
+        monthly = adapter.read_monthly_status("2026-07-01", "2026-09-30")
+        self.assertTrue(monthly["mock_only"])
+        self.assertEqual([item["month"] for item in monthly["months"]], ["2026-07", "2026-08", "2026-09"])
+        self.assertEqual(monthly["months"][0]["locked_status"], "unlocked")
+
+
+    def test_mock_read_ranges_reject_malformed_dates(self) -> None:
+        adapter = mock_adapter.MockSapAdapter()
+        for start, end in (
+            ("xxxx-01-01", "2026-01-31"),
+            ("2026-01", "2026-01-31"),
+            ("2026/01/01", "2026-01-31"),
+            ("2026-01-01", "xxxx-01-31"),
+        ):
+            with self.subTest(start=start):
+                with self.assertRaisesRegex(mock_adapter.MockAdapterError, "invalid_date_range"):
+                    adapter.read_existing_entries(start, end)
+
+    def test_mock_duplicate_identity_is_date_only(self) -> None:
+        plan = contract.build_adapter_plan(
+            self.preview(
+                intent("2026-07-16", "sickness", "full_day"),
+                "I was sick on July 16, 2026",
+            )
+        )
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "duplicate"):
+            mock_adapter.MockSapAdapter().check_row(plan)
+
+    def test_mock_check_confirmation_and_one_row_update_are_in_memory(self) -> None:
+        plan = contract.build_adapter_plan(
+            self.preview(
+                intent("2026-07-15", "sickness", "full_day"),
+                "I was sick on July 15, 2026",
+            )
+        )
+        confirmed = contract.confirm_adapter_plan(plan, plan["plan_id"])
+        adapter = mock_adapter.MockSapAdapter()
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "check_required"):
+            adapter.update_row(plan, confirmed)
+        checked = adapter.check_row(plan)
+        self.assertEqual(checked["state"], "mock_checked")
+        before = mock_adapter.DEFAULT_MOCK_FIXTURE_PATH.read_bytes()
+        updated = adapter.update_row(plan, confirmed)
+        after = mock_adapter.DEFAULT_MOCK_FIXTURE_PATH.read_bytes()
+        self.assertTrue(updated["mock_only"])
+        self.assertEqual(updated["state"], "mock_submitted")
+        self.assertFalse(updated["fixture_mutated"])
+        self.assertEqual(before, after)
+        reread = adapter.read_existing_entries("2026-07-15", "2026-07-15")
+        self.assertEqual(reread["entries"][0]["state"], "mock_submitted")
+
+    def test_mock_locked_released_stale_and_abort_paths_fail_closed(self) -> None:
+        locked_plan = contract.build_adapter_plan(
+            self.preview(
+                intent("2026-08-18", "sickness", "full_day"),
+                "I was sick on August 18, 2026",
+            )
+        )
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "locked"):
+            mock_adapter.MockSapAdapter().check_row(locked_plan)
+
+        released_plan = contract.build_adapter_plan(
+            self.preview(
+                intent("2026-09-02", "sickness", "full_day"),
+                "I was sick on September 2, 2026",
+            )
+        )
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "released"):
+            mock_adapter.MockSapAdapter().check_row(released_plan)
+
+        plan = contract.build_adapter_plan(
+            self.preview(
+                intent("2026-07-15", "sickness", "full_day"),
+                "I was sick on July 15, 2026",
+            )
+        )
+        confirmed = contract.confirm_adapter_plan(plan, plan["plan_id"])
+        stale = json.loads(json.dumps(confirmed))
+        stale["plan_id"] = "0" * 64
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "stale_confirmation"):
+            mock_adapter.MockSapAdapter().update_row(plan, stale)
+
+        adapter = mock_adapter.MockSapAdapter()
+        adapter.abort()
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "aborted"):
+            adapter.update_row(plan, confirmed)
+
+    def test_mock_rejects_multi_row_update_and_forbidden_imports(self) -> None:
+        plan = contract.build_adapter_plan(
+            self.preview(
+                intent("2026-07-15", "sickness", "full_day", end="2026-07-17"),
+                "I was sick from July 15 to July 17, 2026",
+            )
+        )
+        self.assertGreater(len(plan["planned_rows"]), 1)
+        confirmed = contract.confirm_adapter_plan(plan, plan["plan_id"])
+        adapter = mock_adapter.MockSapAdapter()
+        adapter.check_row(plan)
+        with self.assertRaisesRegex(mock_adapter.MockAdapterError, "one_row_only"):
+            adapter.update_row(plan, confirmed)
+        source = Path(mock_adapter.__file__).read_text(encoding="utf-8")
+        for forbidden in ("urllib", "requests", "selenium", "playwright", "urlopen"):
+            self.assertNotIn(forbidden, source)
+
 
     def test_ollama_defaults_and_missing_model_error(self) -> None:
         extractor = app.OllamaIntentExtractor()

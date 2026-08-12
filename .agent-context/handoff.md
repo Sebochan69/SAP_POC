@@ -62,3 +62,16 @@ No live code, browser dependency, connection, credential, selector, URL, `Check`
 - Focused regressions cover the no-year Gemma hallucination and mismatched-year cases. Verification passes 36 tests and compilation; exact `i will take a leave on Aug 20` local HTTP smoke returned 200 clarification with no planned dates in 52.05 seconds.
 - The prior `ollama_http_error` may have been from an old `app.py` process. User must `Ctrl+C` and restart `python3 app.py` after updates; source changes are not hot-reloaded.
 - No browser/SAP/live integration behavior was added or verified.
+
+## Feature 6C mock POC
+
+Real SAP access is not assumed. Feature 6C is delegated as a separate local mock adapter, defined in `.agent-context/task.md`. It may simulate the future lifecycle entirely in memory with explicit `mock_only` markers, but it does not answer Feature 6B gates or authorize live integration.
+
+- `mock_adapter.py` and `config/mock_sap_2026.json` implement the approved local Feature 6C mock-only POC.
+- The fixture is strictly validated and never written; simulated one-row updates use an in-memory copy and return `mock_submitted`, `mock_only: true`, and mock evidence references.
+- `MockSapAdapter` exposes read-only discovery, normalized existing/monthly reads, date-only mock duplicate identity, Check, exact Feature 6A confirmation, fail-closed locked/released/stale/ambiguous paths, and abort/kill switch.
+- `app.py`, `POST /api/preview`, and `POST /api/submit` remain unchanged; no production submission route exists.
+- `verify.py` passes 43 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py` passes.
+- Feature 6B remains blocked; the mock does not answer any real SAP gate. No browser or visual verification is claimed.
+- Strict fixture numeric validation rejects non-finite `hours_per_day` values via `math.isfinite`, with deterministic Python and JSON `NaN` regressions.
+- Strict mock read-range validation rejects malformed, short, non-ISO, reversed, and invalid-calendar ranges with `invalid_date_range`.

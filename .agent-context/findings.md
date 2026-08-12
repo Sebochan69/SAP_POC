@@ -78,4 +78,26 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - Missing explicit years and mismatched model years force an unresolved date range before expansion, so clarification responses contain no eligible or planned dates.
 - Existing explicit-year leave/work and calendar handling remains covered by the prior regression suite.
 - `verify.py` passes 36 deterministic tests; compilation passes; the exact no-year local HTTP request returned HTTP 200 clarification with no planned dates in 52.05 seconds.
+
+## Feature 6C mock-only findings
+
+- Real SAP access is unavailable; the approved replacement is strictly local and mock-only.
+- `config/mock_sap_2026.json` uses exact validated fixture keys, 2026-consistent dates/months, unique date/month identities, and explicit lock/release states.
+- `MockSapAdapter` returns redacted normalized reads with `mock_only: true`, `mock_fixture` provenance, mock evidence references, and an explicit date-only identity rule.
+- Check, exact Feature 6A confirmation, one-row in-memory update, and abort/kill-switch behavior are deterministic and fail closed for duplicate, locked, released, stale, ambiguous, invalid, multi-row, and aborted paths.
+- The fixture bytes remain unchanged after simulated update. `POST /api/submit` remains 404 and `app.py`/live HTTP behavior were not edited.
+- `verify.py` passes 42 tests and all four Python modules compile. Feature 6B remains blocked; no browser or visual verification is claimed.
 - The prior `ollama_http_error` may have been produced by a stale long-running app process; restart with `Ctrl+C` and `python3 app.py` after updates. No browser/SAP/live integration behavior was added or verified.
+
+## Feature 6C strict numeric fixture validation
+
+- `hours_per_day` now rejects NaN and positive/negative infinity with `math.isfinite` while preserving the existing positive 0–24 range.
+- Regression coverage rejects Python non-finite floats and a JSON `NaN` fixture value; `verify.py` passes 42 deterministic tests and all four modules compile.
+- Feature 6C remains mock-only and Feature 6B remains blocked; no browser, SAP, network, credential, or API changes were made.
+
+## Feature 6C strict mock read-range validation
+
+- `_range_bounds` now checks the complete ISO date shape before extracting the year, so malformed, short, and non-ISO ranges fail with `MockAdapterError("invalid_date_range")` instead of leaking `ValueError`.
+- The focused regression covers `xxxx-01-01`, a short `2026-01`, and `2026/01/01`; the existing reversed and invalid-calendar checks remain unchanged.
+- Full verification passes 43 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py` passes. No browser or visual verification was performed.
+- Feature 6C remains mock-only; `app.py`, `/api/preview`, `/api/submit`, fixture immutability, and Feature 6B blocked status are unchanged. No browser or visual verification is claimed.

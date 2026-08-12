@@ -40,6 +40,7 @@
 
 - Feature 6B preflight is documentation-only and blocked. `.agent-context/feature6b-gates.md` is the source of truth for Q1–Q11 owners, missing answers, and approval order.
 - No Edge/SAP/network/browser implementation, credentials, cookies, tokens, URLs, selectors, `Check`, or `Update` action may be added or used until Pi records all gates and explicitly authorizes the next phase.
+- Feature 6C is a local mock-only adapter for the POC. It may simulate the future lifecycle in memory with explicit `mock_only` markers, but never claims SAP behavior, bypasses Feature 6B gates, or enables live submission.
 - The user must provide/confirm only the approved non-secret environment/session prerequisites and perform login/MFA personally later; secrets remain inside the user-controlled Edge session.
 
 - Local Ollama extraction defaults to installed `gemma4:12b`; `OLLAMA_MODEL` remains the override.
@@ -52,3 +53,9 @@
 - Apply the year guard before holiday/calendar expansion so guessed dates cannot become eligible, planned, or work-entry dates.
 - Preserve existing explicit-year leave/work and calendar behavior; no SAP/Edge/browser path is involved.
 - After code updates, the user must stop the old Python process with `Ctrl+C` and restart `python3 app.py`; the previous `ollama_http_error` may have come from stale process code.
+
+- Feature 6C is mock-only and local because real SAP access is unavailable; it must never be represented as Feature 6B or real SAP evidence.
+- The mock fixture is immutable on disk. Simulated writes use only an in-memory copy and return `mock_submitted`, never real `submitted`.
+- Mock duplicate identity is date-only and explicitly not SAP truth. Reads and actions carry `mock_only: true` and mock evidence references.
+- Simulated update requires a validated Feature 6A plan, exact `awaiting_confirmation`, successful mock Check, exactly one row, unlocked/unreleased status, and no duplicate/ambiguity; abort permanently disables further updates.
+- Feature 6B Q1–Q11 gates remain unanswered and blocked. `app.py`, `/api/preview`, and `/api/submit` stay unchanged.
