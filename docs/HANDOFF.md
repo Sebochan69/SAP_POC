@@ -120,6 +120,10 @@ Feature 6C is approved as a local mock-only adapter because real SAP access is u
 
 Feature 6B remains **BLOCKED**. The user confirmed that no non-production SAP environment is available, so Q1 cannot open discovery. Its remaining Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
 
+## Feature 6E — local SAP-like sandbox
+
+A separate localhost-only sandbox is specified for controlled mock testing. It may exercise the local plan/check/confirmation/mock-update state machine and deterministic duplicate/locked/released failures, but it cannot validate real SAP selectors, permissions, `Check` side effects, duplicate semantics, or production behavior. All output must remain explicitly `MOCK ONLY`; Feature 6B stays blocked.
+
 Verification:
 
 ```bash
@@ -138,6 +142,10 @@ Result: **PASS — 43 deterministic tests passed; compilation passed.** No brows
 - Forbidden-import coverage rejects browser/network/application/model-runtime imports in the mock adapter and demo.
 
 Feature 6B remains **BLOCKED**. The user confirmed that no non-production SAP environment is available, so Q1 cannot open discovery. Its remaining Q1–Q11 environment, selector, side-effect, identity, audit, security, and approval gates remain unchanged.
+
+## Feature 6E — local SAP-like sandbox
+
+A separate localhost-only sandbox is specified for controlled mock testing. It may exercise the local plan/check/confirmation/mock-update state machine and deterministic duplicate/locked/released failures, but it cannot validate real SAP selectors, permissions, `Check` side effects, duplicate semantics, or production behavior. All output must remain explicitly `MOCK ONLY`; Feature 6B stays blocked.
 
 Verification:
 

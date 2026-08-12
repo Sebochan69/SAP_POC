@@ -84,3 +84,7 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 - The demo verifies fixture bytes/checksum and the adapter's source fixture remain unchanged; no HTTP route or UI was added.
 - `verify.py` passes 44 deterministic tests; `python3 -m py_compile app.py verify.py integration_contract.py mock_adapter.py mock_demo.py` passes.
 - Feature 6B remains blocked; the user confirmed no non-production SAP environment is available, so Q1 cannot open discovery. No browser, visual, SAP, Edge, network, or credential behavior was added or verified.
+
+## Feature 6E in progress
+
+A separate localhost-only SAP-like sandbox is now specified in `.agent-context/task-06e-local-sandbox.md`. It will exercise mock contract/state handling only, remain in-memory and explicitly `MOCK ONLY`, and will not answer Feature 6B Q1–Q11.

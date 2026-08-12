@@ -63,3 +63,4 @@
 - Feature 6D may only demonstrate the approved local mock lifecycle from an in-memory validated preview; its `mock_submitted` state is never real SAP submission evidence.
 - `mock_demo.py` must verify the fixture bytes/checksum before and after the simulated update and fail nonzero if the source fixture or immutable adapter fixture changes.
 - Feature 6B remains blocked; no browser, SAP, Edge, network, credentials, or HTTP route is authorized by the demo.
+- Feature 6E may add a separate localhost-only SAP-like sandbox for mock contract/state testing. It must be explicitly `MOCK ONLY`, in-memory, standard-library-only, and must not answer Q1–Q11 or alter `app.py`/`/api/submit`.
