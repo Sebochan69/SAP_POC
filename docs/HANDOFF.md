@@ -158,6 +158,21 @@ The local-only change extracts `static/index.html`, shared `errors.py`, and `oll
 
 Feature 6B remains blocked.
 
+## Feature 8 — user-facing local runbook completed
+
+`docs/RUNBOOK.md` is the single user-facing, documentation-only guide for the local dry-run preview and the separate `MOCK ONLY` sandbox. It includes copy/paste commands for:
+
+```bash
+python3 verify.py
+python3 mock_demo.py
+python3 mock_sap_sandbox.py --port 8993
+python3 app.py
+```
+
+It lists the sandbox endpoints, the safe `previewed -> mock_checked -> awaiting_confirmation -> mock_submitted` lifecycle, fail-closed duplicate/locked/released and confirmation-before-Check paths, `/api/submit` `404`, and the requirement to restart `app.py` after source changes. `mock_submitted` is only local simulation evidence.
+
+Verification: `python3 verify.py` passed 49 deterministic tests with the fake-Ollama dry-run harness. No application code, SAP, Edge, network, credentials, browser, or visual-verification behavior was added or claimed. Feature 6B remains **BLOCKED**.
+
 ## Feature 6B preflight
 
 Status: **BLOCKED — preflight/documentation only.** The complete gate checklist is `.agent-context/feature6b-gates.md`.

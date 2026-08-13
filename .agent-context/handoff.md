@@ -89,6 +89,14 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 
 6B can finish only through an approved non-production SAP environment plus written Q1–Q11 owner answers and Pi authorization, followed by watched read-only discovery, read-only reconciliation, safe Check, and one-row explicitly confirmed Update with postcondition evidence. If no environment can be provided, the honest endpoint is Feature 6E: local/mock POC complete, 6B not implemented.
 
+## Feature 8 completed — user-facing local runbook
+
+`docs/RUNBOOK.md` is the documentation-only copy/paste guide for the local preview and `MOCK ONLY` sandbox. It covers `python3 verify.py`, `python3 mock_demo.py`, `python3 mock_sap_sandbox.py --port 8993`, `python3 app.py`, all sandbox endpoints, safe and fail-closed failure states, `/api/submit` `404`, and restarting `app.py` after source changes.
+
+- Verification: `python3 verify.py` passed 49 deterministic tests and the fake-Ollama dry-run harness.
+- No application code, SAP, Edge, network, credentials, browser, or visual-verification behavior was added or claimed.
+- Feature 6B remains **BLOCKED**.
+
 ## Feature 7 implemented — app structure hardening
 
 The local-only change extracts the static frontend document into `static/index.html`, shared feature errors into `errors.py`, and Ollama transport into `ollama_client.py` while keeping `app.py` as the single HTTP/planning process. Routes, import compatibility, and `/api/submit` behavior remain unchanged. Pi review found no blockers; it does not add SAP/Edge behavior or unblock Feature 6B.

@@ -125,3 +125,10 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - HTML, state, plan, action, and reset responses remain explicitly mock-only; `/api/submit` is 404 and no `app.py` route changed.
 - `verify.py` passes 49 tests, compilation passes, and the source fixture checksum remains `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
 - This tests local contract/state/API handling only. It does not answer Feature 6B Q1–Q11 or validate SAP selectors, permissions, side effects, duplicate semantics, or production behavior. No browser or visual verification is claimed.
+
+## Feature 8 user-facing local runbook
+
+- `docs/RUNBOOK.md` is complete and documentation-only. It gives copy/paste commands for the deterministic verifier, in-memory mock demo, localhost `MOCK ONLY` sandbox, and local Ollama-backed preview app.
+- It lists sandbox state/plan/check/confirm/update/reset endpoints, the safe `previewed -> mock_checked -> awaiting_confirmation -> mock_submitted` flow, and fail-closed `duplicate`, `locked`, `released`, and confirmation-before-Check paths.
+- It records that `POST /api/submit` remains `404`, `app.py` must be restarted after source changes, and `mock_submitted` is not SAP submission evidence.
+- `python3 verify.py` passed 49 deterministic tests with the fake-Ollama dry-run harness. No code, SAP, Edge, network, credential, browser, or visual-verification behavior was added or claimed; Feature 6B remains blocked.

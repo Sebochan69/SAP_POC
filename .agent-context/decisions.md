@@ -70,3 +70,6 @@
 - `SandboxState.update()` requires `awaiting_confirmation`; failed or unchecked plans cannot update.
 - Feature 6B completion requires an approved non-production SAP environment, written Q1–Q11 owner answers, Pi authorization, and gated watched phases. Without that, Feature 6E is the honest local/mock endpoint and 6B remains unimplemented.
 - Feature 7 hardens the local app with only three seams: `static/index.html`, shared `errors.py`, and `ollama_client.py`; do not split the planner or add a framework/dependencies. Preserve app import compatibility and all dry-run routes. Implementation is approved after Pi review; no blockers found.
+- Feature 8 is documentation-only: `docs/RUNBOOK.md` is the single user-facing runbook for local preview/mock use. Do not add application code or live SAP/Edge behavior.
+- Feature 8 is complete as documentation-only `docs/RUNBOOK.md`. It is the single user-facing guide for `verify.py`, `mock_demo.py`, the `127.0.0.1:8993` `MOCK ONLY` sandbox, and `app.py`; it must not authorize code or live integration changes.
+- The runbook must preserve the explicit `MOCK ONLY` boundary, `/api/submit` `404`, restart-after-source-change note, no SAP/Edge/network/credentials behavior, no browser or visual-verification claim, and Feature 6B **BLOCKED** status.

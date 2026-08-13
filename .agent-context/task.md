@@ -1,8 +1,10 @@
-# Feature 7 — Harden local app structure
+# Feature 8 — User-facing local runbook
 
 ## Status
 
-Implemented and approved by Pi review. Feature 6E is approved; Feature 6B remains blocked.
+Complete. Feature 7 is approved; Feature 6B remains blocked.
+
+Requirements are in `.agent-context/task-08-runbook.md`. Documentation only; no application code changes are requested.
 
 The local-only structural hardening extracts the static frontend document, shared errors, and Ollama transport while preserving `app.py` routes and import compatibility. Full requirements are in `.agent-context/task-07-app-structure.md`. Review found no blockers.
 
@@ -39,3 +41,10 @@ Feature 6E is implemented in `mock_sap_sandbox.py` as a standard-library-only `1
 - `verify.py` passes 49 deterministic tests; all six Python modules compile.
 - No browser or visual verification is claimed.
 - Re-review confirmed no remaining Feature 6E blockers; confirmation now requires a successful Check and failed/unchecked plans cannot update.
+
+## Feature 8 result
+
+`docs/RUNBOOK.md` is complete as the single user-facing, documentation-only runbook. It includes copy/paste commands for `python3 verify.py`, `python3 mock_demo.py`, `python3 mock_sap_sandbox.py --port 8993`, and `python3 app.py`; the sandbox endpoint list; safe and fail-closed lifecycle states; `/api/submit` returning `404`; the restart note; and the `MOCK ONLY`/no SAP, Edge, network, credentials, browser, or visual-verification limits.
+
+- Verification: `python3 verify.py` passes 49 deterministic tests and reports the fake-Ollama dry-run boundary.
+- Feature 6B remains **BLOCKED**; the runbook does not authorize or implement live integration.
