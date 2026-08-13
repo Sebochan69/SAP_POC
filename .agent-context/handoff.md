@@ -89,6 +89,16 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 
 6B can finish only through an approved non-production SAP environment plus written Q1–Q11 owner answers and Pi authorization, followed by watched read-only discovery, read-only reconciliation, safe Check, and one-row explicitly confirmed Update with postcondition evidence. If no environment can be provided, the honest endpoint is Feature 6E: local/mock POC complete, 6B not implemented.
 
+## Feature 10 completed — typed request with visual calendar block
+
+The embedded `mock_sap_sandbox.py` page now accepts one explicit-year natural-language leave request and visually marks the matching 2026 date as `DEMO BLOCKED`. Supported forms are `August 20, 2026`, `20 August 2026`, and `2026-08-20`.
+
+- Missing-year, invalid, unsupported-year, and ambiguous inputs show helpful client-side messages and block nothing.
+- The calendar is visual-only. Typed text is never sent to an endpoint, Ollama, SAP, Edge, or network; no new endpoint or lifecycle/API/fixture behavior was added.
+- `Reset calendar` and the existing `Reset demo` clear the typed request and visual block.
+- Verification: `python3 verify.py` passed 51 deterministic tests; Python compilation, `python3 mock_demo.py`, direct safety/no-new-endpoint scan, and embedded JavaScript syntax check passed; fixture SHA-256 remained `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
+- No browser or visual verification is claimed. Feature 6B remains **BLOCKED**.
+
 ## Feature 9 completed — friendly demo frontend
 
 The embedded `mock_sap_sandbox.py` HTML is now a responsive, accessible, non-technical walkthrough labeled `DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP`. It uses the unchanged sandbox endpoints and lifecycle state.

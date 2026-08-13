@@ -1,8 +1,22 @@
-# Feature 9 — Friendly demo frontend
+# Feature 10 — Typed leave request with visual calendar block
 
 ## Status
 
-Implemented and approved by Pi review. Feature 8 is approved; Feature 6B remains blocked.
+Implemented and verified. Feature 9 is approved; Feature 6B remains blocked.
+
+Requirements are in `.agent-context/task-10-typed-calendar-demo.md`. This is a client-side, visual demo-only addition; existing APIs, lifecycle, fixture, and live-integration boundaries remain unchanged.
+
+## Feature 10 result
+
+The embedded `mock_sap_sandbox.py` page now accepts one natural-language leave request with an explicit year and visually marks the matching date in a local 2026 calendar as `DEMO BLOCKED`.
+
+- Supported forms: `August 20, 2026`, `20 August 2026`, and `2026-08-20`.
+- Missing-year, invalid, unsupported-year, and ambiguous inputs show helpful client-side messages and block nothing.
+- Typed text stays client-side; no new endpoint, lifecycle/API, fixture, `app.py`, SAP, Edge, browser, network, credential, or Ollama behavior was added.
+- `Reset calendar` and `Reset demo` clear the typed request and visual block.
+- `verify.py` passes 51 deterministic tests; all six Python modules compile; `python3 mock_demo.py` passes; fixture SHA-256 remains `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
+- Direct safety/no-new-endpoint scan and embedded JavaScript syntax check pass.
+- No browser or visual verification is claimed.
 
 Requirements are in `.agent-context/task-09-demo-frontend.md`. This is a demo-only UI improvement for non-technical viewers; no production SAP behavior is authorized.
 

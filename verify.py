@@ -900,6 +900,63 @@ class FeatureVerification(unittest.TestCase):
             self.assertIn(marker, source)
         self.assertNotIn(">Update</button>", source)
         self.assertNotIn("SAP Update", source)
+    def test_mock_sandbox_typed_calendar_is_client_only_and_adds_no_endpoint(self) -> None:
+        source = Path(mock_sap_sandbox.__file__).read_text(encoding="utf-8")
+        for marker in (
+            "Type a request and see the demo calendar",
+            'data-ui-marker="typed-calendar-demo"',
+            'id="typed-request"',
+            'placeholder="I will take vacation leave on August 20, 2026."',
+            'id="block-typed-date"',
+            'id="demo-calendar"',
+            'data-ui-marker="typed-calendar-grid"',
+            "August 20, 2026",
+            "20 August 2026",
+            "2026-08-20",
+            "explicit four-digit year",
+            "invalid_date",
+            "missing_year",
+            "unsupported_year",
+            "ambiguous_date",
+            "This demo calendar covers 2026 only",
+            "DEMO BLOCKED",
+            "Visual simulation only",
+            "does not create or submit a real entry",
+            "Sunday through Saturday",
+            "const DEMO_CALENDAR_YEAR = 2026",
+            "ISO_DATE_PATTERN",
+            "MONTH_FIRST_PATTERN",
+            "DAY_FIRST_PATTERN",
+            "function parseTypedDate",
+            "Reset calendar",
+        ):
+            self.assertIn(marker, source)
+
+        typed_source = source[
+            source.index("const DEMO_CALENDAR_YEAR"):
+            source.index("function handleFailure")
+        ]
+        self.assertNotIn("fetch(", typed_source)
+        self.assertNotIn("apiCall", typed_source)
+        self.assertNotIn("/api/", typed_source)
+
+        handler_source = source[
+            source.index("class SandboxHandler"):
+            source.index("class SandboxServer")
+        ]
+        routes = (
+            "/",
+            "/api/mock/state",
+            "/api/mock/plan",
+            "/api/mock/check",
+            "/api/mock/confirm",
+            "/api/mock/update",
+            "/api/mock/reset",
+        )
+        self.assertEqual(handler_source.count("path == "), len(routes))
+        for route in routes:
+            self.assertIn(f'path == "{route}"', handler_source)
+
 
 
 

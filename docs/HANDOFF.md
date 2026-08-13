@@ -158,6 +158,17 @@ The local-only change extracts `static/index.html`, shared `errors.py`, and `oll
 
 Feature 6B remains blocked.
 
+## Feature 10 — typed request with visual calendar block completed
+
+The embedded `mock_sap_sandbox.py` page now provides a client-side typed leave-request panel and a local 2026 calendar. It supports `August 20, 2026`, `20 August 2026`, and `2026-08-20`, requires an explicit four-digit year, and marks valid 2026 dates `DEMO BLOCKED`.
+
+- Missing-year, invalid, unsupported-year, and ambiguous input shows a helpful live status and blocks nothing.
+- The panel says it is visual-only; typed text stays client-side and is never sent to an endpoint, Ollama, SAP, Edge, or network.
+- `Reset calendar` and `Reset demo` clear the typed request and visual block.
+- Existing lifecycle/API behavior, `/api/submit` `404`, `app.py`, and fixture bytes remain unchanged.
+- Verification: `python3 verify.py` passed 51 deterministic tests; Python compilation, `python3 mock_demo.py`, direct safety/no-new-endpoint scan, and embedded JavaScript syntax check passed; fixture SHA-256 remained `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
+- No browser or visual verification is claimed. Feature 6B remains **BLOCKED**.
+
 ## Feature 9 — friendly demo frontend approved
 
 Pi review found no blockers. The embedded `mock_sap_sandbox.py` HTML is a responsive, accessible, one-page demo for non-technical viewers. Its top banner reads `DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP`, and it explains that nothing is sent anywhere.

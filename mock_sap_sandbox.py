@@ -187,6 +187,128 @@ p { max-width: 70ch; }
   background: #f3f7ff;
 }
 .request-box p { margin: .25rem 0; }
+.typed-calendar {
+  display: grid;
+  gap: 1rem;
+}
+.typed-form {
+  display: grid;
+  gap: .6rem;
+  max-width: 72ch;
+}
+.typed-form label { font-weight: 800; }
+.typed-form textarea {
+  width: 100%;
+  min-height: 7rem;
+  resize: vertical;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: .8rem;
+  color: var(--ink);
+  background: var(--paper);
+  font: inherit;
+}
+.typed-form textarea:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.typed-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .6rem;
+}
+.typed-status {
+  min-height: 1.5em;
+  margin: 0;
+  font-weight: 700;
+}
+.typed-date-preview {
+  border: 2px solid var(--amber);
+  border-radius: 12px;
+  padding: .9rem 1rem;
+  background: var(--amber-bg);
+}
+.typed-date-preview p { margin: .2rem 0 0; }
+.typed-date-preview strong {
+  color: var(--red);
+  font-size: 1.1rem;
+  letter-spacing: .04em;
+}
+.calendar-wrap {
+  padding-top: .5rem;
+  border-top: 1px solid var(--line);
+}
+.calendar-heading { margin: 0 0 .7rem; }
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: .35rem;
+}
+.calendar-weekday, .calendar-cell {
+  min-height: 3.8rem;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: .45rem;
+}
+.calendar-weekday {
+  min-height: auto;
+  border: 0;
+  padding: .2rem;
+  color: var(--muted);
+  font-size: .78rem;
+  font-weight: 800;
+  text-align: center;
+}
+.calendar-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  background: #fff;
+}
+.calendar-cell.is-empty {
+  visibility: hidden;
+  border: 0;
+}
+.calendar-cell.is-blocked {
+  border: 3px solid var(--red);
+  background: var(--red-bg);
+  color: var(--red);
+  font-weight: 900;
+}
+.calendar-cell.is-blocked small {
+  font-size: .62rem;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.calendar-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .75rem 1rem;
+  margin: .8rem 0 0;
+  color: var(--muted);
+  font-size: .88rem;
+}
+.legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: .4rem;
+}
+.legend-swatch {
+  width: 1rem;
+  height: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 3px;
+  background: #fff;
+}
+.legend-swatch.blocked {
+  border: 2px solid var(--red);
+  background: var(--red-bg);
+}
+.visual-only {
+  color: var(--muted);
+  font-size: .9rem;
+}
 dl { display: grid; grid-template-columns: max-content 1fr; gap: .35rem .8rem; margin: 1rem 0 0; }
 dt { color: var(--muted); font-weight: 700; }
 dd { margin: 0; }
@@ -236,6 +358,36 @@ footer {
     <p>This shows how a leave request could be reviewed. Nothing is sent anywhere.</p>
     <p>Choose an example below, then follow the four demo steps. Every result is kept in memory and marked as a simulation.</p>
   </section>
+  <section class="panel typed-calendar" aria-labelledby="typed-calendar-title" data-ui-marker="typed-calendar-demo">
+    <p class="eyebrow">Try your own wording</p>
+    <h2 id="typed-calendar-title">Type a request and see the demo calendar</h2>
+    <p>Type one leave date in <code>August 20, 2026</code>, <code>20 August 2026</code>, or <code>2026-08-20</code>. An explicit four-digit year is required.</p>
+    <p class="visual-only">Visual simulation only: the typed text stays in this page and is never sent anywhere. It does not create or submit a real entry.</p>
+    <div class="typed-form">
+      <label for="typed-request">Leave request text</label>
+      <textarea id="typed-request" rows="3" placeholder="I will take vacation leave on August 20, 2026." aria-describedby="typed-request-help"></textarea>
+      <p id="typed-request-help" class="visual-only">Example: I will take vacation leave on August 20, 2026.</p>
+      <div class="typed-actions">
+        <button type="button" id="block-typed-date">Block date on demo calendar</button>
+        <button type="button" class="secondary" id="reset-typed-calendar">Reset calendar</button>
+      </div>
+    </div>
+    <p class="typed-status" id="typed-date-status" aria-live="polite" aria-atomic="true">No date is blocked. Enter an explicit-year request to begin.</p>
+    <div class="typed-date-preview" id="typed-date-preview" hidden>
+      <p><strong>DEMO BLOCKED</strong> <span id="typed-date-preview-date"></span></p>
+      <p>Visual simulation only. This does not create or submit a real entry.</p>
+    </div>
+    <div class="calendar-wrap">
+      <h3 class="calendar-heading" id="calendar-heading">August 2026</h3>
+      <p id="calendar-month-note" class="visual-only">No date is blocked. This calendar is a visual simulation only.</p>
+      <div class="calendar-grid" id="demo-calendar" role="grid" aria-labelledby="calendar-heading" aria-label="Sunday through Saturday" data-ui-marker="typed-calendar-grid"></div>
+      <div class="calendar-legend" aria-label="Calendar legend">
+        <span class="legend-item"><span class="legend-swatch blocked" aria-hidden="true"></span>DEMO BLOCKED: visual only</span>
+        <span class="legend-item"><span class="legend-swatch" aria-hidden="true"></span>Available demo date</span>
+      </div>
+    </div>
+  </section>
+
 
   <section aria-labelledby="scenario-title">
     <p class="eyebrow">Pick a story to tell</p>
@@ -405,6 +557,179 @@ async function apiCall(path, options) {
   const body = await response.json();
   return {ok: response.ok, body};
 }
+const DEMO_CALENDAR_YEAR = 2026;
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December"
+];
+const WEEKDAY_LABELS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const ISO_DATE_PATTERN = /\\b(\\d{4})-(\\d{2})-(\\d{2})\\b/g;
+const MONTH_FIRST_PATTERN = /\\b(January|February|March|April|May|June|July|August|September|October|November|December)\\s+(\\d{1,2}),?\\s+(\\d{4})\\b/gi;
+const DAY_FIRST_PATTERN = /\\b(\\d{1,2})\\s+(January|February|March|April|May|June|July|August|September|October|November|December)\\s+(\\d{4})\\b/gi;
+const DATE_WITHOUT_YEAR_PATTERN = /\\b(?:January|February|March|April|May|June|July|August|September|October|November|December)\\s+\\d{1,2}\\b|\\b\\d{1,2}\\s+(?:January|February|March|April|May|June|July|August|September|October|November|December)\\b/i;
+let calendarMonth = 7;
+let blockedDate = null;
+
+function monthNumber(name) {
+  return MONTH_NAMES.findIndex((month) => month.toLowerCase() === name.toLowerCase()) + 1;
+}
+
+function isoDate(year, month, day) {
+  return `${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`;
+}
+
+function formatTypedDate(year, month, day) {
+  return `${MONTH_NAMES[month - 1]} ${day}, ${year}`;
+}
+
+function validCalendarDate(year, month, day) {
+  if (!Number.isInteger(year) || year < 1 || !Number.isInteger(month) || month < 1 || month > 12 || !Number.isInteger(day) || day < 1 || day > 31) {
+    return false;
+  }
+  const candidate = new Date(Date.UTC(2000, month - 1, day));
+  candidate.setUTCFullYear(year);
+  return candidate.getUTCFullYear() === year && candidate.getUTCMonth() === month - 1 && candidate.getUTCDate() === day;
+}
+
+function parseTypedDate(rawText) {
+  const text = rawText.trim();
+  if (!text) {
+    return {
+      kind: "missing_year",
+      message: "Enter a request with an explicit four-digit year, for example August 20, 2026."
+    };
+  }
+  const candidates = [];
+  for (const match of text.matchAll(ISO_DATE_PATTERN)) candidates.push({kind: "iso", match});
+  for (const match of text.matchAll(MONTH_FIRST_PATTERN)) candidates.push({kind: "month_first", match});
+  for (const match of text.matchAll(DAY_FIRST_PATTERN)) candidates.push({kind: "day_first", match});
+  if (candidates.length > 1) {
+    return {
+      kind: "ambiguous_date",
+      message: "I found more than one date. Enter one explicit date so the visual demo can block nothing ambiguous."
+    };
+  }
+  if (!candidates.length) {
+    const hasDateShape = DATE_WITHOUT_YEAR_PATTERN.test(text);
+    return {
+      kind: hasDateShape ? "missing_year" : "invalid_date",
+      message: hasDateShape
+        ? "An explicit four-digit year is required. Try August 20, 2026."
+        : "I could not find a supported date. Try August 20, 2026, 20 August 2026, or 2026-08-20."
+    };
+  }
+  const candidate = candidates[0];
+  let year;
+  let month;
+  let day;
+  if (candidate.kind === "iso") {
+    year = Number(candidate.match[1]);
+    month = Number(candidate.match[2]);
+    day = Number(candidate.match[3]);
+  } else if (candidate.kind === "month_first") {
+    month = monthNumber(candidate.match[1]);
+    day = Number(candidate.match[2]);
+    year = Number(candidate.match[3]);
+  } else {
+    day = Number(candidate.match[1]);
+    month = monthNumber(candidate.match[2]);
+    year = Number(candidate.match[3]);
+  }
+  if (!validCalendarDate(year, month, day)) {
+    return {
+      kind: "invalid_date",
+      message: "That date is not valid. Try August 20, 2026, 20 August 2026, or 2026-08-20."
+    };
+  }
+  if (year !== DEMO_CALENDAR_YEAR) {
+    return {
+      kind: "unsupported_year",
+      year,
+      message: `This demo calendar covers 2026 only. ${year} is outside the visual demo calendar, so nothing was blocked.`
+    };
+  }
+  return {
+    kind: "valid",
+    year,
+    month,
+    day,
+    iso: isoDate(year, month, day),
+    display: formatTypedDate(year, month, day)
+  };
+}
+
+function renderCalendar() {
+  const grid = $("demo-calendar");
+  $("calendar-heading").textContent = `${MONTH_NAMES[calendarMonth]} ${DEMO_CALENDAR_YEAR}`;
+  grid.replaceChildren();
+  WEEKDAY_LABELS.forEach((label) => {
+    const cell = document.createElement("span");
+    cell.className = "calendar-weekday";
+    cell.setAttribute("role", "columnheader");
+    cell.textContent = label;
+    grid.append(cell);
+  });
+  const firstDay = new Date(Date.UTC(DEMO_CALENDAR_YEAR, calendarMonth, 1)).getUTCDay();
+  const daysInMonth = new Date(Date.UTC(DEMO_CALENDAR_YEAR, calendarMonth + 1, 0)).getUTCDate();
+  for (let index = 0; index < firstDay; index += 1) {
+    const empty = document.createElement("span");
+    empty.className = "calendar-cell is-empty";
+    empty.setAttribute("role", "gridcell");
+    empty.setAttribute("aria-hidden", "true");
+    grid.append(empty);
+  }
+  for (let day = 1; day <= daysInMonth; day += 1) {
+    const date = isoDate(DEMO_CALENDAR_YEAR, calendarMonth + 1, day);
+    const isBlocked = date === blockedDate;
+    const cell = document.createElement("span");
+    cell.className = `calendar-cell${isBlocked ? " is-blocked" : ""}`;
+    cell.dataset.calendarDate = date;
+    cell.setAttribute("role", "gridcell");
+    cell.setAttribute("aria-label", `${formatTypedDate(DEMO_CALENDAR_YEAR, calendarMonth + 1, day)}${isBlocked ? ", DEMO BLOCKED" : ""}`);
+    const number = document.createElement("span");
+    number.textContent = String(day);
+    cell.append(number);
+    if (isBlocked) {
+      const label = document.createElement("small");
+      label.textContent = "DEMO BLOCKED";
+      cell.append(label);
+    }
+    grid.append(cell);
+  }
+  $("calendar-month-note").textContent = blockedDate
+    ? "One date is highlighted for visual simulation only."
+    : "No date is blocked. This calendar is a visual simulation only.";
+}
+
+function blockTypedDate() {
+  const parsed = parseTypedDate($("typed-request").value);
+  blockedDate = null;
+  $("typed-date-preview").hidden = true;
+  if (parsed.kind !== "valid") {
+    calendarMonth = 7;
+    $("typed-date-status").textContent = parsed.message;
+    renderCalendar();
+    return;
+  }
+  blockedDate = parsed.iso;
+  calendarMonth = parsed.month - 1;
+  $("typed-date-preview-date").textContent = `${parsed.display} on the local 2026 calendar`;
+  $("typed-date-preview").hidden = false;
+  $("typed-date-status").textContent = `Detected ${parsed.display}. DEMO BLOCKED on the local calendar. Visual simulation only; nothing is sent anywhere.`;
+  renderCalendar();
+}
+
+function resetTypedCalendar() {
+  $("typed-request").value = "";
+  blockedDate = null;
+  calendarMonth = 7;
+  $("typed-date-preview-date").textContent = "";
+  $("typed-date-preview").hidden = true;
+  $("typed-date-status").textContent = "No date is blocked. Enter an explicit-year request to begin.";
+  renderCalendar();
+}
+
+
 
 function handleFailure(body) {
   lifecycle = body.state || "failed";
@@ -526,6 +851,7 @@ async function resetDemo() {
   $("request-detail").hidden = true;
   $("request-copy").textContent = "Choose an example, then select “1. Show request”.";
   showResult("neutral", "Ready for a demo", "The local simulation has been reset.");
+  resetTypedCalendar();
   render();
 }
 
@@ -535,6 +861,9 @@ $("check-request").addEventListener("click", checkRequest);
 $("confirm-example").addEventListener("click", confirmExample);
 $("simulate-update").addEventListener("click", simulateUpdate);
 $("reset-demo").addEventListener("click", resetDemo);
+$("block-typed-date").addEventListener("click", blockTypedDate);
+$("reset-typed-calendar").addEventListener("click", resetTypedCalendar);
+renderCalendar();
 render();
 </script>
 </body>

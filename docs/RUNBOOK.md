@@ -83,6 +83,33 @@ The page enables each button only when the previous mock state allows it. A visi
 
 Pi has not browser- or visually-verified this page. The walkthrough remains a local mock simulation, and `Simulate update` does not create a real SAP entry.
 
+### Typed request calendar walkthrough
+
+The page also has a client-side panel titled `Type a request and see the demo calendar`.
+It is a visual simulation only: the typed text stays in the page, is never sent anywhere,
+and does not create or submit a real entry.
+
+Enter one explicit-year date in the request box. These forms are supported:
+
+```text
+I will take vacation leave on August 20, 2026.
+20 August 2026
+2026-08-20
+```
+
+Select `Block date on demo calendar`. The local 2026 calendar moves to the matching month
+and marks the date `DEMO BLOCKED`. The panel accepts only one unambiguous date. Missing
+years, invalid dates, unsupported years, and multiple dates show a helpful status message
+and block nothing. The calendar covers 2026 only.
+
+`Reset calendar` clears the typed request and visual block. `Reset demo` also clears this
+client-side state while retaining the existing mock lifecycle reset semantics.
+
+This panel has not been browser- or visually-verified. The walkthrough remains a local
+mock simulation; no browser automation, SAP/Edge behavior, network call, credential
+access, Ollama request, or real submission behavior is involved.
+
+
 ### Sandbox endpoints
 
 All sandbox responses are explicitly mock-only and all state is in memory.

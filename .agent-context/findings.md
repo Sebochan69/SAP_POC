@@ -139,3 +139,12 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - Added four scenario cards (`Safe example`, `Already entered`, `Date unavailable`, `Period closed`), guided state-aware actions, a progress stepper, plain-language result panels, reset, technical JSON/state details, responsive CSS, keyboard focus-visible styles, and `aria-live` output.
 - Existing endpoints and state remain unchanged: the safe flow is `previewed` → `mock_checked` → `awaiting_confirmation` → `mock_submitted`; failure scenarios remain `duplicate`, `locked`, and `released`; `/api/submit` remains `404`.
 - Verification: `python3 verify.py` passed 50 deterministic tests; all six Python modules compile; `python3 mock_demo.py` passed; the fixture SHA-256 remained `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`. No browser or visual verification is claimed.
+
+## Feature 10 typed request with visual calendar block
+
+- The embedded sandbox UI now parses one explicit-year leave date entirely client-side in the supported forms `August 20, 2026`, `20 August 2026`, and `2026-08-20`.
+- Missing-year, invalid, unsupported-year, and ambiguous input returns an `aria-live` message and clears the visual block; valid 2026 input selects the matching local month and marks one cell `DEMO BLOCKED`.
+- The calendar is limited to fixture year 2026 and is explicitly visual-only; typed text is not included in any API/Ollama/network call.
+- `Reset calendar` and `Reset demo` clear typed text and calendar state. Existing lifecycle endpoints, `/api/submit` `404`, fixture bytes, and `app.py` remain unchanged.
+- Verification: 51 deterministic tests passed; Python compilation, `mock_demo.py`, direct safety/no-new-endpoint scan, and embedded JavaScript syntax check passed; fixture SHA-256 remained `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
+- No browser or visual verification is claimed; Feature 6B remains blocked.
