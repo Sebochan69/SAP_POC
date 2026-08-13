@@ -132,3 +132,10 @@ Risks remain limited to model extraction quality, unconfirmed mappings beyond `0
 - It lists sandbox state/plan/check/confirm/update/reset endpoints, the safe `previewed -> mock_checked -> awaiting_confirmation -> mock_submitted` flow, and fail-closed `duplicate`, `locked`, `released`, and confirmation-before-Check paths.
 - It records that `POST /api/submit` remains `404`, `app.py` must be restarted after source changes, and `mock_submitted` is not SAP submission evidence.
 - `python3 verify.py` passed 49 deterministic tests with the fake-Ollama dry-run harness. No code, SAP, Edge, network, credential, browser, or visual-verification behavior was added or claimed; Feature 6B remains blocked.
+
+## Feature 9 friendly demo frontend
+
+- Replaced only the embedded `mock_sap_sandbox.py` HTML/UI. The page is explicitly labeled `DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP` and explains that nothing is sent anywhere.
+- Added four scenario cards (`Safe example`, `Already entered`, `Date unavailable`, `Period closed`), guided state-aware actions, a progress stepper, plain-language result panels, reset, technical JSON/state details, responsive CSS, keyboard focus-visible styles, and `aria-live` output.
+- Existing endpoints and state remain unchanged: the safe flow is `previewed` → `mock_checked` → `awaiting_confirmation` → `mock_submitted`; failure scenarios remain `duplicate`, `locked`, and `released`; `/api/submit` remains `404`.
+- Verification: `python3 verify.py` passed 50 deterministic tests; all six Python modules compile; `python3 mock_demo.py` passed; the fixture SHA-256 remained `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`. No browser or visual verification is claimed.

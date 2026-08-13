@@ -1,10 +1,12 @@
-# Feature 8 — User-facing local runbook
+# Feature 9 — Friendly demo frontend
 
 ## Status
 
-Complete. Feature 7 is approved; Feature 6B remains blocked.
+Implemented and approved by Pi review. Feature 8 is approved; Feature 6B remains blocked.
 
-Requirements are in `.agent-context/task-08-runbook.md`. Documentation only; no application code changes are requested.
+Requirements are in `.agent-context/task-09-demo-frontend.md`. This is a demo-only UI improvement for non-technical viewers; no production SAP behavior is authorized.
+
+Feature 9 may modify only the embedded sandbox HTML, its deterministic verification coverage, the local runbook, and coordination records. No live integration behavior is authorized.
 
 The local-only structural hardening extracts the static frontend document, shared errors, and Ollama transport while preserving `app.py` routes and import compatibility. Full requirements are in `.agent-context/task-07-app-structure.md`. Review found no blockers.
 
@@ -48,3 +50,14 @@ Feature 6E is implemented in `mock_sap_sandbox.py` as a standard-library-only `1
 
 - Verification: `python3 verify.py` passes 49 deterministic tests and reports the fake-Ollama dry-run boundary.
 - Feature 6B remains **BLOCKED**; the runbook does not authorize or implement live integration.
+
+## Feature 9 result
+
+Pi review found no blockers. The friendly demo frontend is approved; no browser or visual verification was performed or claimed.
+
+The embedded `mock_sap_sandbox.py` page is now a friendly, accessible, responsive `DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP` walkthrough using the unchanged local state/API endpoints. It includes scenario cards, guided actions, lifecycle stepper, plain-language result panels, reset, and technical JSON/state details.
+
+- Safe flow and failure endpoints remain unchanged; `/api/submit` remains `404`.
+- Added deterministic HTML marker/accessibility coverage while preserving the existing safe, failure, reset, fixture-immutability, and forbidden-behavior regressions.
+- Verification: `python3 verify.py` passed 50 tests; compilation and `python3 mock_demo.py` passed; fixture SHA-256 stayed `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
+- No production UI, dependencies, SAP, Edge, browser automation, network, credentials, or real submission behavior was added. No browser or visual verification is claimed.

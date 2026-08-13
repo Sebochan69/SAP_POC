@@ -866,6 +866,41 @@ class FeatureVerification(unittest.TestCase):
             self.assertNotIn(forbidden, source)
         with self.assertRaises(ValueError):
             mock_sap_sandbox.SandboxServer(("0.0.0.0", 0))
+    def test_mock_sandbox_demo_html_markers_and_accessibility(self) -> None:
+        source = Path(mock_sap_sandbox.__file__).read_text(encoding="utf-8")
+        for marker in (
+            "DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP",
+            "This shows how a leave request could be reviewed. Nothing is sent anywhere.",
+            'data-demo="mock-sap-sandbox"',
+            'data-mode="demo-only"',
+            'data-ui-marker="scenario-cards"',
+            "Safe example",
+            "Already entered",
+            "Date unavailable",
+            "Period closed",
+            "1. Show request",
+            "2. Check request",
+            "3. Confirm this example",
+            "4. Simulate update",
+            "Request shown",
+            "Checked",
+            "Confirmation",
+            "Demo result",
+            'aria-live="polite"',
+            'aria-label="Demo progress"',
+            'aria-pressed="true"',
+            "Technical details (JSON/state)",
+            "Reset demo",
+            "/api/mock/plan?scenario=${selectedScenario}",
+            '"/api/mock/check"',
+            '"/api/mock/confirm"',
+            '"/api/mock/update"',
+            '"/api/mock/reset"',
+        ):
+            self.assertIn(marker, source)
+        self.assertNotIn(">Update</button>", source)
+        self.assertNotIn("SAP Update", source)
+
 
 
     def test_ollama_defaults_and_missing_model_error(self) -> None:

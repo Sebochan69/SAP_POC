@@ -158,6 +158,16 @@ The local-only change extracts `static/index.html`, shared `errors.py`, and `oll
 
 Feature 6B remains blocked.
 
+## Feature 9 — friendly demo frontend approved
+
+Pi review found no blockers. The embedded `mock_sap_sandbox.py` HTML is a responsive, accessible, one-page demo for non-technical viewers. Its top banner reads `DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP`, and it explains that nothing is sent anywhere.
+
+- Scenario cards: `Safe example`, `Already entered`, `Date unavailable`, and `Period closed`.
+- Guided actions: `1. Show request`, `2. Check request`, `3. Confirm this example`, and `4. Simulate update`; action buttons are enabled only for the matching local mock lifecycle state.
+- A visible stepper marks `Request shown`, `Checked`, `Confirmation`, and `Demo result`; result panels explain success and fail-closed outcomes; reset and technical JSON/state details remain available.
+- Existing sandbox endpoints/state remain unchanged. The safe flow is `previewed -> mock_checked -> awaiting_confirmation -> mock_submitted`; failure scenarios remain `duplicate`, `locked`, and `released`; `/api/submit` remains `404`.
+- Verification: `python3 verify.py` passed 50 deterministic tests; all six Python modules compile; `python3 mock_demo.py` passed; fixture SHA-256 remained `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`. No production UI, dependencies, SAP, Edge, browser automation, network, credentials, or real submission behavior was added. Pi has not performed browser or visual verification. Feature 6B remains **BLOCKED**.
+
 ## Feature 8 — user-facing local runbook completed
 
 `docs/RUNBOOK.md` is the single user-facing, documentation-only guide for the local dry-run preview and the separate `MOCK ONLY` sandbox. It includes copy/paste commands for:

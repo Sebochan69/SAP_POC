@@ -58,6 +58,31 @@ http://127.0.0.1:8993/
 
 Pi has not performed browser or visual verification; the UI address is provided only for an optional user-run local check.
 
+### Friendly demo walkthrough
+
+The sandbox page is a one-page, non-technical walkthrough. It is explicitly labeled:
+
+```text
+DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP
+```
+
+The page says: “This shows how a leave request could be reviewed. Nothing is sent anywhere.” Use the four large example cards:
+
+- **Safe example** — continue through the full local mock lifecycle.
+- **Already entered** — the `duplicate` check stops safely.
+- **Date unavailable** — the `locked` check stops safely.
+- **Period closed** — the `released` check stops safely.
+
+For the safe example, use the guided buttons in order:
+
+```text
+1. Show request -> 2. Check request -> 3. Confirm this example -> 4. Simulate update
+```
+
+The page enables each button only when the previous mock state allows it. A visible stepper marks `Request shown`, `Checked`, `Confirmation`, and `Demo result`. Result panels explain successful and fail-closed outcomes in plain language. `Reset demo` returns the in-memory sandbox to `not_started`; `Technical details (JSON/state)` is optional diagnostic output.
+
+Pi has not browser- or visually-verified this page. The walkthrough remains a local mock simulation, and `Simulate update` does not create a real SAP entry.
+
 ### Sandbox endpoints
 
 All sandbox responses are explicitly mock-only and all state is in memory.

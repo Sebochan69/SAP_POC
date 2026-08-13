@@ -89,6 +89,16 @@ Real SAP access is not assumed. Feature 6C is delegated as a separate local mock
 
 6B can finish only through an approved non-production SAP environment plus written Q1–Q11 owner answers and Pi authorization, followed by watched read-only discovery, read-only reconciliation, safe Check, and one-row explicitly confirmed Update with postcondition evidence. If no environment can be provided, the honest endpoint is Feature 6E: local/mock POC complete, 6B not implemented.
 
+## Feature 9 completed — friendly demo frontend
+
+The embedded `mock_sap_sandbox.py` HTML is now a responsive, accessible, non-technical walkthrough labeled `DEMO ONLY — MOCK SAP — NOT CONNECTED TO SAP`. It uses the unchanged sandbox endpoints and lifecycle state.
+
+- Scenario cards: `Safe example`, `Already entered`, `Date unavailable`, and `Period closed`.
+- Guided actions: `1. Show request`, `2. Check request`, `3. Confirm this example`, and `4. Simulate update`; controls enable only for valid local mock states.
+- Progress stepper, plain-language success/fail-closed result panels, reset, and optional technical JSON/state details are included.
+- `/api/submit` remains `404`; safe and failure API behavior, in-memory state, and fixture immutability remain unchanged.
+- Verification: `python3 verify.py` passed 50 deterministic tests; compilation and `python3 mock_demo.py` passed; fixture SHA-256 remained `f0d7df53373d79ac8c2dbfd454cd577fc8f9d699bf2259f84d74accd8098b557`.
+
 ## Feature 8 completed — user-facing local runbook
 
 `docs/RUNBOOK.md` is the documentation-only copy/paste guide for the local preview and `MOCK ONLY` sandbox. It covers `python3 verify.py`, `python3 mock_demo.py`, `python3 mock_sap_sandbox.py --port 8993`, `python3 app.py`, all sandbox endpoints, safe and fail-closed failure states, `/api/submit` `404`, and restarting `app.py` after source changes.
